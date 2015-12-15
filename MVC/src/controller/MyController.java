@@ -43,7 +43,7 @@ public class MyController implements Controller {
 				model.generateMaze3d(x, y, z, args[7], args[3]);
 			}
 		});
-		/*
+		
 		//display
 		commandsMap.put("display", new Command() {
 					
@@ -52,6 +52,7 @@ public class MyController implements Controller {
 					
 			}
 		});
+		/*
 		//display cross
 		commandsMap.put("display cross section by {X,Y,Z}", new Command() {
 				

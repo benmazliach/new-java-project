@@ -32,7 +32,6 @@ public class Run {
 				//out.write("Print 58\n");
 				out.write("exit\n");
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			out.close();
