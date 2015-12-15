@@ -20,6 +20,7 @@ public class MyView implements View {
 	@Override
 	public void printString(String s) {
 		System.out.println(s);
+		
 	}
 
 }

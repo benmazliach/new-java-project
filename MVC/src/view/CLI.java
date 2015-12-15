@@ -30,28 +30,32 @@ public class CLI implements Runnable{
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+				String[] args = null;
 				String s = null;
 				boolean dos = false;
 				try {
 					while((s=in.readLine()).equals("exit")!=true)
 					{
-						String[] args = s.split(" ");
+						args = s.split(" ");
 						s=null;
+						dos = false;
 						for(int i=0;i<args.length;i++)
 						{
 							if(hashMap.containsKey(s)==true && dos ==false)
 							{
-								hashMap.get(s).doCommand(args);
 								dos = true;
 							}
 							else
 							{
+								if(dos==false)
+								{
 								if(s==null)
 									s=args[i];
 								else if(s!=null)
 									s = s + " " +args[i];
 								if((i+1)==args.length)
 									s = s + " " + args[i];
+								}
 							}
 						}
 						if(hashMap.containsKey(s)==true)
@@ -67,9 +71,9 @@ public class CLI implements Runnable{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				//System.out.println(s);
+				//hashMap.get(s).doCommand(args);
 			}
-		}).start();
+		},"cli thread").start();
 	}
 	
 	public BufferedReader getIn() {

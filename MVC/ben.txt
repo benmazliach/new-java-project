@@ -1,4 +1,2 @@
-generate ben
-dir ben
-Print 58
+generate maze 3d ben 5 5 5 MyMaze3dGenerator
 exit

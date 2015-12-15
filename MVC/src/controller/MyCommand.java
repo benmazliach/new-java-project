@@ -10,12 +10,12 @@ public class MyCommand implements Command {
 	
 	@Override
 	public void doCommand(String[] args) {
-		System.out.println(s);
+		//System.out.println(args[0]);
 	}
 	
-	@Override
+	/*@Override
 	public String toString() {
 		return s;
-	}
+	}*/
 
 }

@@ -9,21 +9,19 @@ import view.View;
 
 public class MyController implements Controller {
 
-	Model<Position> m;
-	View v;
+	Model<Position> model;
+	View view;
 	HashMap<String, Command> commandsMap;
 	HashMap<String, Maze3d> maze3dMap;
 	
-	public MyController(Model<Position> m,View v,HashMap<String, Command> commandsMap) {
-		this.m = m;
-		this.v = v;
+	public MyController(HashMap<String, Command> commandsMap) {
 		this.commandsMap = commandsMap;
 		this.maze3dMap = new HashMap<String, Maze3d>();
-		
+		putCommandsMap();
 	}
 	
 	public void putCommandsMap()
-	{	
+	{	/*
 		//dir <path>
 		commandsMap.put("dir", new Command() {
 			
@@ -31,15 +29,21 @@ public class MyController implements Controller {
 			public void doCommand(String[] args) {
 				
 			}
-		});
-		//generate 3d maze <name> <other params>
-		commandsMap.put("generate 3d maze", new Command() {
+		});*/
+		
+		//generate 3d maze <name> <x,y,z,type of generate>
+		commandsMap.put("generate maze 3d", new Command() {
 			
 			@Override
 			public void doCommand(String[] args) {
+				int x = Integer.parseInt(args[4]);
+				int y = Integer.parseInt(args[5]);
+				int z = Integer.parseInt(args[6]);
 				
+				model.generateMaze3d(x, y, z, args[7], args[3]);
 			}
 		});
+		/*
 		//display
 		commandsMap.put("display", new Command() {
 					
@@ -103,31 +107,25 @@ public class MyController implements Controller {
 			public void doCommand(String[] args) {
 											
 			}
-		});
+		});*/
 		//exit
 		commandsMap.put("exit", new Command() {
 											
 			@Override
 			public void doCommand(String[] args) {
-				try {
-					
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
+				System.out.println("exit");
 			}
 		});
 	}
 	
 	@Override
-	public void setModel(Model<Position> m) {
-		// TODO Auto-generated method stub
-		
+	public void setModel(Model<Position> model) {
+		this.model = model;
 	}
 
 	@Override
-	public void setView(View v) {
-		// TODO Auto-generated method stub
-		
+	public void setView(View view) {
+		this.view = view;
 	}
 
 	@Override
@@ -135,7 +133,8 @@ public class MyController implements Controller {
 		if(maze3dMap.containsKey(name)==false)
 		{
 			maze3dMap.put(name, maze);
-			v.printString("maze "+name+" is ready");
+			String s = "maze "+name+" is ready";
+			view.printString(s);
 		}
 	}
 
