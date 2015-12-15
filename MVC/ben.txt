@@ -1,0 +1,4 @@
+generate ben
+dir ben
+Print 58
+exit
