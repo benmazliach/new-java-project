@@ -1,6 +1,11 @@
 package view;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import controller.Controller;
+import io.MyCompressorOutputStream;
 
 public class MyView implements View {
 
@@ -21,6 +26,7 @@ public class MyView implements View {
 	public void printString(String s) {
 		//System.out.println(s);
 		cli.getOut().println(s);
+		cli.getOut().flush();
 	}
 
 	@Override
@@ -42,6 +48,7 @@ public class MyView implements View {
 			//System.out.println();
 			cli.getOut().println();
 		}
+		cli.getOut().flush();
 	}
 
 	@Override
@@ -60,6 +67,32 @@ public class MyView implements View {
 			//System.out.println();
 			cli.getOut().println();
 		}
+		cli.getOut().flush();
+	}
+
+	@Override
+	public void saveMazeInFile(byte[] byteArray, String name, String fileName) {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				MyCompressorOutputStream outFile;
+				try {
+					outFile = new MyCompressorOutputStream(new FileOutputStream(fileName));
+					outFile.write(byteArray);
+					String s = "file "+fileName+" is ready";
+					printString(s);
+					outFile.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		},"save maze view thread").start();
 	}
 
 }
+
+
+

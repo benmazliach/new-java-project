@@ -164,4 +164,9 @@ public class MyController implements Controller {
 		view.printString(str);
 	}
 
+	@Override
+	public void saveMazeInFile(byte[] byteArray,String name, String fileName) {
+		view.saveMazeInFile(byteArray,name,fileName);
+	}
+
 }

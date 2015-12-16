@@ -1,15 +1,10 @@
 package model;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
 import algorithms.mazeGenerators.MyMaze3dGenerator;
 import algorithms.mazeGenerators.Position;
 import controller.Controller;
-import io.MyCompressorOutputStream;
 
 public class MyModel implements Model <Position>{
 
@@ -63,17 +58,17 @@ public class MyModel implements Model <Position>{
 			
 			@Override
 			public void run() {
-				MyCompressorOutputStream myCompressorOutputStream = null;
+				controller.saveMazeInFile(maze.toByteArray(),name,fileName);
+				/*MyCompressorOutputStream myCompressorOutputStream = null;
 				try {
 					myCompressorOutputStream = new MyCompressorOutputStream(new FileOutputStream(fileName+".maze"));
-					try {
-						myCompressorOutputStream.write(maze.toByteArray());
-						String s = "file "+fileName+" is ready";
-						controller.printStr(s);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					myCompressorOutputStream.write(maze.toByteArray());
+					String s = "file "+fileName+" is ready";
+					controller.printStr(s);
 				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+				catch (IOException e) {
 					e.printStackTrace();
 				}
 				try {
@@ -81,9 +76,9 @@ public class MyModel implements Model <Position>{
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				}*/
 			}
-		},"saveMazeThread").start();
+		},"saveMazeThread model").start();
 	}
 	
 

@@ -27,8 +27,8 @@ public class Run {
 			PrintWriter out = null;
 			try {
 				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ben.txt")));
-				out.write("generate maze 3d ben 3 3 3 MyMaze3dGenerator\n");
-				//out.write("display ben\n");
+				out.write("generate maze 3d ben 15 10 15 MyMaze3dGenerator\n");
+				out.write("display ben\n");
 				//out.write("display cross section by Y 2 for ben\n");
 				out.write("save maze ben 23\n");
 				out.write("exit\n");

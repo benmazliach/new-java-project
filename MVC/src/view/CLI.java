@@ -68,7 +68,7 @@ public class CLI implements Runnable{
 							out.flush();
 						}
 						try {
-							Thread.sleep(50);
+							Thread.sleep(1000);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
