@@ -1,9 +1,11 @@
 package controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
+import algorithms.search.State;
 import model.Model;
 import view.View;
 
@@ -13,10 +15,12 @@ public class MyController implements Controller {
 	View view;
 	HashMap<String, Command> commandsMap;
 	HashMap<String, Maze3d> maze3dMap;
+	HashMap<String, ArrayList<State<Position>>> solutionMap;
 	
 	public MyController(HashMap<String, Command> commandsMap) {
 		this.commandsMap = commandsMap;
 		this.maze3dMap = new HashMap<String, Maze3d>();
+		this.solutionMap = new HashMap<String, ArrayList<State<Position>>>();
 		putCommandsMap();
 	}
 	
@@ -49,47 +53,58 @@ public class MyController implements Controller {
 					
 			@Override
 			public void doCommand(String[] args) {
-					if(maze3dMap.containsKey(args[1]) == true)
-						view.printMaze3d(maze3dMap.get(args[1]).getMaze(), args[1]);
-					else
-						view.printString("Maze " + args[1] + "is no exist!");
-			}
-		});
-		//display cross section by {X,Y,Z}
-		commandsMap.put("display cross section by", new Command() {
-				
-			@Override
-			public void doCommand(String[] args) {
-				if(maze3dMap.containsKey(args[7]) == true)
+				if(args.length==8)
 				{
-					int section = Integer.parseInt(args[5]);
-					model.crossBySection(maze3dMap.get(args[7]),args[7],section,args[4].toLowerCase().charAt(0));
+					if((args[0]+" "+args[1]+" "+args[2]+" "+args[3]).equals("display cross section by"))
+					{
+						if(maze3dMap.containsKey(args[7]) == true)
+						{
+							int section = Integer.parseInt(args[5]);
+							model.crossBySection(maze3dMap.get(args[7]),args[7],section,args[4].toLowerCase().charAt(0));
+						}
+					}
+				}
+				else if(args.length==3)
+				{
+					if((args[0]+" "+args[1]).equals("display solution"))
+					{
+						if(maze3dMap.containsKey(args[2]) == true)
+						{
+							view.displaySolution(solutionMap.get(args[2]),args[2]);
+						}
+					}
+				}
+				else if((args[0]).equals("display"))
+				{
+					if(maze3dMap.containsKey(args[1]) == true)
+					{
+						view.printMaze3d(maze3dMap.get(args[1]).getMaze(), args[1]);
+					}
 				}
 				else
-					view.printString("Maze " + args[7] + " is no exist!");	
+					view.printString("Maze " + args[1] + "is not exist!");
 			}
 		});
-		
 		//save maze
 		commandsMap.put("save maze", new Command() {
 					
 			@Override
 			public void doCommand(String[] args) {
 				if(maze3dMap.containsKey(args[2]) == true)
-				{
 					model.saveMaze(maze3dMap.get(args[2]),args[2],args[3]);
-				}
 				else
-					view.printString("Maze " + args[2] + " is no exist!");			
+					view.printString("Maze " + args[2] + " is not exist!");			
 			}
 		});
-		/*
 		//load maze
 		commandsMap.put("load maze", new Command() {
 						
 			@Override
 			public void doCommand(String[] args) {
-							
+				if(maze3dMap.containsKey(args[3]) == true)
+					model.loadMaze(maze3dMap.get(args[3]),args[3], args[2]);
+				else
+					view.printString("Maze " + args[2] + " is not exist!");		
 			}
 		});
 		//maze size
@@ -97,7 +112,10 @@ public class MyController implements Controller {
 								
 			@Override
 			public void doCommand(String[] args) {
-									
+				if(maze3dMap.containsKey(args[2]) == true)
+					model.mazeSize(maze3dMap.get(args[2]),args[2]);
+				else
+					view.printString("Maze " + args[2] + " is not exist!");	
 			}
 		});
 		//file size
@@ -105,7 +123,7 @@ public class MyController implements Controller {
 										
 			@Override
 			public void doCommand(String[] args) {
-											
+				model.fileSize(args);							
 			}
 		});
 		//solve
@@ -113,17 +131,12 @@ public class MyController implements Controller {
 										
 			@Override
 			public void doCommand(String[] args) {
-											
+				if(maze3dMap.containsKey(args[1])==true)
+					model.solveMaze(args,maze3dMap.get(args[1]));
+				else
+					view.printString("Maze " + args[2] + " is not exist!");	
 			}
 		});
-		//display solution
-		commandsMap.put("display solution", new Command() {
-										
-			@Override
-			public void doCommand(String[] args) {
-											
-			}
-		});*/
 		//exit
 		commandsMap.put("exit", new Command() {
 											
@@ -165,8 +178,25 @@ public class MyController implements Controller {
 	}
 
 	@Override
-	public void saveMazeInFile(byte[] byteArray,String name, String fileName) {
-		view.saveMazeInFile(byteArray,name,fileName);
+	public void loadMaze(Maze3d maze, String name) {
+		if(maze3dMap.containsKey(name)==false)
+		{
+			maze3dMap.put(name, maze);
+			view.printString("load maze "+name+" succeeded");
+		}
+		else
+		{
+			maze3dMap.replace(name, maze);
+			view.printString("load maze "+name+" succeeded");
+		}
+	}
+
+	@Override
+	public void setSolution(ArrayList<State<Position>> solution, String name) {
+		solutionMap.put(name, solution);
 	}
 
 }
+
+
+

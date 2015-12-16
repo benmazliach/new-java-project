@@ -27,10 +27,15 @@ public class Run {
 			PrintWriter out = null;
 			try {
 				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ben.txt")));
-				out.write("generate maze 3d ben 15 10 15 MyMaze3dGenerator\n");
+				out.write("generate maze 3d ben 5 5 5 MyMaze3dGenerator\n");
 				out.write("display ben\n");
-				//out.write("display cross section by Y 2 for ben\n");
-				out.write("save maze ben 23\n");
+				out.write("display cross section by Y 2 for ben\n");
+				out.write("save maze ben file\n");
+				out.write("load maze file ben\n");
+				out.write("maze size ben\n");
+				out.write("file size file\n");
+				out.write("solve ben BFS\n");
+				out.write("display solution ben\n");
 				out.write("exit\n");
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -47,7 +52,6 @@ public class Run {
 			try {
 				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("or.txt")));
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			MyController con = new MyController(c);
@@ -60,6 +64,7 @@ public class Run {
 			//Thread t = new Thread(d);
 			//t.start();
 			v.start();
+			
 			
 		}
 }

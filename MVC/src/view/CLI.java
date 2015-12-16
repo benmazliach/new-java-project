@@ -68,7 +68,7 @@ public class CLI implements Runnable{
 							out.flush();
 						}
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -82,6 +82,7 @@ public class CLI implements Runnable{
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				//exit
 				hashMap.get(s).doCommand(args);
 			}
 		},"cli thread").start();

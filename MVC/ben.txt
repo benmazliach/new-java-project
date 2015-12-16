@@ -1,4 +1,10 @@
-generate maze 3d ben 15 10 15 MyMaze3dGenerator
+generate maze 3d ben 5 5 5 MyMaze3dGenerator
 display ben
-save maze ben 23
+display cross section by Y 2 for ben
+save maze ben file
+load maze file ben
+maze size ben
+file size file
+solve ben BFS
+display solution ben
 exit

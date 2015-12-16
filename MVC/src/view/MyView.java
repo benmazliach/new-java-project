@@ -1,11 +1,10 @@
 package view;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.ArrayList;
 
+import algorithms.mazeGenerators.Position;
+import algorithms.search.State;
 import controller.Controller;
-import io.MyCompressorOutputStream;
 
 public class MyView implements View {
 
@@ -24,14 +23,12 @@ public class MyView implements View {
 
 	@Override
 	public void printString(String s) {
-		//System.out.println(s);
 		cli.getOut().println(s);
 		cli.getOut().flush();
 	}
 
 	@Override
 	public void printMaze3d(int[][][] arr,String name) {
-		//System.out.println("Maze name: "+name);
 		cli.getOut().println("Maze name: "+name);
 		for(int i=0;i<arr.length;i++)
 		{
@@ -39,13 +36,10 @@ public class MyView implements View {
 			{
 				for(int k=0;k<arr[0][0].length;k++)
 				{
-					//System.out.print(arr[i][j][k] + " ");
 					cli.getOut().print(arr[i][j][k] + " ");
 				}
-				//System.out.println();
 				cli.getOut().println();
 			}
-			//System.out.println();
 			cli.getOut().println();
 		}
 		cli.getOut().flush();
@@ -53,43 +47,26 @@ public class MyView implements View {
 
 	@Override
 	public void crossSectionPrint(int[][] arr, char sectionType, String name,int section) {
-		//System.out.println("Maze name: "+name);
 		cli.getOut().println("Maze name: "+name);
-		//System.out.println("Section by "+sectionType+" = "+section);
 		cli.getOut().println("Section by "+sectionType+" = "+section);
 		for(int i=0;i<arr.length;i++)
 		{
 			for(int j=0;j<arr[0].length;j++)
 			{
-				//System.out.print(arr[i][j] + " ");
 				cli.getOut().print(arr[i][j] + " ");
 			}
-			//System.out.println();
 			cli.getOut().println();
 		}
 		cli.getOut().flush();
 	}
 
 	@Override
-	public void saveMazeInFile(byte[] byteArray, String name, String fileName) {
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				MyCompressorOutputStream outFile;
-				try {
-					outFile = new MyCompressorOutputStream(new FileOutputStream(fileName));
-					outFile.write(byteArray);
-					String s = "file "+fileName+" is ready";
-					printString(s);
-					outFile.close();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		},"save maze view thread").start();
+	public void displaySolution(ArrayList<State<Position>> arrayList,String name) {
+		printString("Solution of maze "+name+" is:");
+		for (State<Position> state : arrayList) {
+			cli.getOut().println(state.toString());
+		}
+		cli.getOut().flush();
 	}
 
 }
