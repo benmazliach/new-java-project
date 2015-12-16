@@ -37,7 +37,7 @@ public class CLI implements Runnable{
 					while((s=in.readLine()).equals("exit")!=true)
 					{
 						args = s.split(" ");
-						s=null;
+						s = null;
 						dos = false;
 						for(int i=0;i<args.length;i++)
 						{
@@ -67,13 +67,18 @@ public class CLI implements Runnable{
 							out.println("Error");
 							out.flush();
 						}
+						try {
+							Thread.sleep(50);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 				//We need to check what we do with this
 				try {
-					Thread.sleep(5);
+					Thread.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

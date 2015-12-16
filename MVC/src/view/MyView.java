@@ -20,7 +20,33 @@ public class MyView implements View {
 	@Override
 	public void printString(String s) {
 		System.out.println(s);
-		cli.notify();
+	}
+
+	@Override
+	public void printMaze3d(int[][][] arr,String name) {
+		System.out.println("Maze name: "+name);
+		for(int i=0;i<arr.length;i++)
+		{
+			for(int j=0;j<arr[0].length;j++)
+			{
+				for(int k=0;k<arr[0][0].length;k++)
+					System.out.print(arr[i][j][k] + " ");
+				System.out.println();
+			}
+			System.out.println();
+		}
+	}
+
+	@Override
+	public void crossSectionPrint(int[][] arr, char sectionType, String name,int section) {
+		System.out.println("Maze name: "+name);
+		System.out.println("Section by "+sectionType+" = "+section);
+		for(int i=0;i<arr.length;i++)
+		{
+			for(int j=0;j<arr[0].length;j++)
+				System.out.print(arr[i][j] + " ");
+			System.out.println();
+		}
 	}
 
 }

@@ -10,5 +10,6 @@ public interface Controller {
 	void setModel(Model<Position> m);
 	void setView(View v);
 	void setMaze3d(Maze3d maze,String name);
+	void crossSection(int[][] arr,char sectionType,String name,int section);
 	
 }

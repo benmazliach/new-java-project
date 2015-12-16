@@ -27,9 +27,9 @@ public class Run {
 			PrintWriter out = null;
 			try {
 				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ben.txt")));
-				out.write("generate maze 3d ben 5 5 5 MyMaze3dGenerator\n");
-				//out.write("dir 58\n");
-				//out.write("Print 58\n");
+				out.write("generate maze 3d ben 3 3 3 MyMaze3dGenerator\n");
+				out.write("display ben\n");
+				//out.write("display cross section by Y 2 for ben\n");
 				out.write("exit\n");
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();

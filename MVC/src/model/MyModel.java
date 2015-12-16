@@ -1,5 +1,6 @@
 package model;
 
+import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
 import algorithms.mazeGenerators.MyMaze3dGenerator;
 import algorithms.mazeGenerators.Position;
@@ -29,7 +30,20 @@ public class MyModel implements Model <Position>{
 			}
 		},"model generate").start();
 	}
+	
 
+	@Override
+	public void crossBySection(Maze3d maze, String name, int section, char typeSection) {
+		if(typeSection=='x')
+			controller.crossSection(maze.getCrossSectionByX(section), typeSection, name , section);
+		else if(typeSection=='y')
+			controller.crossSection(maze.getCrossSectionByY(section), typeSection, name , section);
+		else if(typeSection=='z')
+			controller.crossSection(maze.getCrossSectionByZ(section), typeSection, name , section);
+	}
+
+	
+	
 	public Controller getController() {
 		return controller;
 	}
@@ -37,10 +51,6 @@ public class MyModel implements Model <Position>{
 	public void setController(Controller controller) {
 		this.controller = controller;
 	}
-
-	@Override
-	public void display(String name) {
-		
-	}
+	
 
 }

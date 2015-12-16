@@ -49,18 +49,27 @@ public class MyController implements Controller {
 					
 			@Override
 			public void doCommand(String[] args) {
-					
+					if(maze3dMap.containsKey(args[1]) == true)
+						view.printMaze3d(maze3dMap.get(args[1]).getMaze(), args[1]);
+					else
+						view.printString("Maze " + args[1] + "is no exist!");
 			}
-		});
-		/*
-		//display cross
-		commandsMap.put("display cross section by {X,Y,Z}", new Command() {
+		});/*
+		//display cross section by {X,Y,Z}
+		commandsMap.put("display cross section by", new Command() {
 				
 			@Override
 			public void doCommand(String[] args) {
-						
+				if(maze3dMap.containsKey(args[7]) == true)
+				{
+					int section = Integer.parseInt(args[5]);
+					model.crossBySection(maze3dMap.get(args[7]),args[7],section,args[4].toLowerCase().charAt(0));
+				}
+				else
+					view.printString("Maze " + args[7] + " is no exist!");	
 			}
-		});
+		});*/
+		/*
 		//save maze
 		commandsMap.put("save maze", new Command() {
 					
@@ -137,6 +146,11 @@ public class MyController implements Controller {
 			String s = "maze "+name+" is ready";
 			view.printString(s);
 		}
+	}
+
+	@Override
+	public void crossSection(int[][] arr, char sectionType, String name , int section) {
+		view.crossSectionPrint(arr, sectionType, name , section);
 	}
 
 }
