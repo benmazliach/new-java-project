@@ -11,5 +11,6 @@ public interface Controller {
 	void setView(View v);
 	void setMaze3d(Maze3d maze,String name);
 	void crossSection(int[][] arr,char sectionType,String name,int section);
+	void printStr(String str);
 	
 }
