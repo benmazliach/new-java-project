@@ -1,8 +1,8 @@
 package controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.State;
@@ -25,15 +25,35 @@ public class MyController implements Controller {
 	}
 	
 	public void putCommandsMap()
-	{	/*
+	{
 		//dir <path>
 		commandsMap.put("dir", new Command() {
 			
 			@Override
 			public void doCommand(String[] args) {
-				
+				File file = new File(args[1]);
+				if(file.exists()==true)
+				{
+					view.printString("The path is : ");
+					try {
+						String[] strings = file.list();
+						String str = null;
+						for(int i=0;i<strings.length;i++) {
+							if(str==null)
+								str = strings[i] + "\n";
+							else
+								str += strings[i] + "\n";
+						}
+						view.printString(str);
+					}
+					catch (NullPointerException e){
+						view.printString(e.getMessage());
+					}
+				}
+				else
+					view.printString("Path is not exist");
 			}
-		});*/
+		});
 		
 		//generate 3d maze <name> <x,y,z,type of generate>
 		commandsMap.put("generate maze 3d", new Command() {
@@ -53,6 +73,7 @@ public class MyController implements Controller {
 					
 			@Override
 			public void doCommand(String[] args) {
+				//display cross section by {X,Y,Z} <index> for <name>
 				if(args.length==8)
 				{
 					if((args[0]+" "+args[1]+" "+args[2]+" "+args[3]).equals("display cross section by"))
@@ -63,7 +84,7 @@ public class MyController implements Controller {
 							model.crossBySection(maze3dMap.get(args[7]),args[7],section,args[4].toLowerCase().charAt(0));
 						}
 					}
-				}
+				}//display solution <name>
 				else if(args.length==3)
 				{
 					if((args[0]+" "+args[1]).equals("display solution"))
@@ -73,7 +94,7 @@ public class MyController implements Controller {
 							view.displaySolution(solutionMap.get(args[2]),args[2]);
 						}
 					}
-				}
+				}//display <name>
 				else if((args[0]).equals("display"))
 				{
 					if(maze3dMap.containsKey(args[1]) == true)
@@ -85,7 +106,7 @@ public class MyController implements Controller {
 					view.printString("Maze " + args[1] + "is not exist!");
 			}
 		});
-		//save maze
+		//save maze <name> <file name>
 		commandsMap.put("save maze", new Command() {
 					
 			@Override
@@ -96,18 +117,15 @@ public class MyController implements Controller {
 					view.printString("Maze " + args[2] + " is not exist!");			
 			}
 		});
-		//load maze
+		//load maze <file name> <name>
 		commandsMap.put("load maze", new Command() {
 						
 			@Override
 			public void doCommand(String[] args) {
-				if(maze3dMap.containsKey(args[3]) == true)
-					model.loadMaze(maze3dMap.get(args[3]),args[3], args[2]);
-				else
-					view.printString("Maze " + args[2] + " is not exist!");		
+				model.loadMaze(args[3], args[2]);
 			}
 		});
-		//maze size
+		//maze size <name>
 		commandsMap.put("maze size", new Command() {
 								
 			@Override
@@ -118,7 +136,7 @@ public class MyController implements Controller {
 					view.printString("Maze " + args[2] + " is not exist!");	
 			}
 		});
-		//file size
+		//file size <file name>
 		commandsMap.put("file size", new Command() {
 										
 			@Override
@@ -126,7 +144,7 @@ public class MyController implements Controller {
 				model.fileSize(args);							
 			}
 		});
-		//solve
+		//solve <name> <algorithm>
 		commandsMap.put("solve", new Command() {
 										
 			@Override
@@ -142,7 +160,7 @@ public class MyController implements Controller {
 											
 			@Override
 			public void doCommand(String[] args) {
-				System.out.println("exit");
+				model.exit();
 			}
 		});
 	}

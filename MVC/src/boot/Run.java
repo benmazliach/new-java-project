@@ -28,6 +28,7 @@ public class Run {
 			try {
 				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ben.txt")));
 				out.write("generate maze 3d ben 5 5 5 MyMaze3dGenerator\n");
+				out.write("dir src\n");
 				out.write("display ben\n");
 				out.write("display cross section by Y 2 for ben\n");
 				out.write("save maze ben file\n");
@@ -41,6 +42,7 @@ public class Run {
 				e.printStackTrace();
 			}
 			out.close();
+			
 			BufferedReader in = null;
 			//in = new BufferedReader(new InputStreamReader(System.in));
 			try {
@@ -50,7 +52,7 @@ public class Run {
 				e.printStackTrace();
 			}
 			try {
-				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("or.txt")));
+				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("test.txt")));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -64,7 +66,6 @@ public class Run {
 			//Thread t = new Thread(d);
 			//t.start();
 			v.start();
-			
 			
 		}
 }

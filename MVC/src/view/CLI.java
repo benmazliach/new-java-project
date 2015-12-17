@@ -76,13 +76,6 @@ public class CLI implements Runnable{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				//We need to check what we do with this
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				//exit
 				hashMap.get(s).doCommand(args);
 			}
 		},"cli thread").start();

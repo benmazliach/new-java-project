@@ -6,6 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
@@ -26,15 +29,17 @@ public class MyModel implements Model <Position>{
 
 	Controller controller;
 	HashMap<String, Maze3d> mazeInFile;
+	ExecutorService threadpool;
 	
 	public MyModel(Controller controller) {
 		this.controller = controller;
 		this.mazeInFile = new HashMap<String, Maze3d>();
+		this.threadpool = Executors.newFixedThreadPool(10);  
 	}
 
 	@Override
 	public void generateMaze3d(int x, int y, int z, String generate,String name) {
-		new Thread(new Runnable() {
+		threadpool.execute(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -46,7 +51,7 @@ public class MyModel implements Model <Position>{
 				
 				controller.setMaze3d(mg.getMaze(),name);
 			}
-		},"model generate").start();
+		});
 	}
 	
 
@@ -72,50 +77,42 @@ public class MyModel implements Model <Position>{
 
 	@Override
 	public void saveMaze(Maze3d maze, String name, String fileName) {
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				MyCompressorOutputStream outFile;
-				try {
-					outFile = new MyCompressorOutputStream(new FileOutputStream(fileName));
-					outFile.write(maze.toByteArray());
-					mazeInFile.put(fileName, maze);
-					String s = "file "+fileName+" is ready";
-					controller.printStr(s);
-					outFile.close();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		},"saveMazeThread model").start();
+		MyCompressorOutputStream outFile;
+		try {
+			outFile = new MyCompressorOutputStream(new FileOutputStream(fileName));
+			outFile.write(maze.toByteArray());
+			mazeInFile.put(fileName, maze);
+			String s = "file "+fileName+" is ready";
+			controller.printStr(s);
+			outFile.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void loadMaze(Maze3d maze, String name , String fileName) {
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				MyDecompressorInputStream inFile;
-				try {
-					inFile = new MyDecompressorInputStream(new FileInputStream(fileName));
-					byte[] b = new byte[4096];
-					if(inFile.read(b)!=-1)
-					{
-						Maze3d maze = new Maze3d(b);
-						controller.loadMaze(maze,name);
-					}
-					else
-						controller.printStr("Can't load maze");
-						
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} 
+	public void loadMaze(String name , String fileName) {
+		MyDecompressorInputStream inFile;
+		try {
+			inFile = new MyDecompressorInputStream(new FileInputStream(fileName));
+			byte[] b = new byte[4096];
+			if(mazeInFile.containsKey(fileName)==true)
+			{
+				if(inFile.read(b)!=-1)
+				{
+					Maze3d maze = new Maze3d(b);
+					controller.loadMaze(maze,name);
+				}
+				else
+					controller.printStr("Can't load maze");	
 			}
-		},"loadMazeThread model").start();
+			else
+				controller.printStr("File " + fileName + " is not exist!");	
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -137,7 +134,7 @@ public class MyModel implements Model <Position>{
 
 	@Override
 	public void solveMaze(String[] args, Maze3d maze) {
-		new Thread(new Runnable() {
+		threadpool.execute(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -161,9 +158,16 @@ public class MyModel implements Model <Position>{
 					controller.printStr("solution for " +args[1]+ " is ready");
 				}
 			}
-		},"solve solution Thread").start();
-			
+		});
 	}
-	
 
+	@Override
+	public void exit() {
+		threadpool.shutdown();
+		try {
+			while(!(threadpool.awaitTermination(10, TimeUnit.SECONDS)));
+		} catch (InterruptedException e) {
+			controller.printStr(e.getMessage());
+		}
+	}
 }
