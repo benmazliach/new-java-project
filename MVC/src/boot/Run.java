@@ -48,12 +48,12 @@ public class Run {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}*/
-			//out = new PrintWriter(new OutputStreamWriter(System.out));
-			try {
+			out = new PrintWriter(new OutputStreamWriter(System.out));
+			/*try {
 				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("test.txt")));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-			}
+			}*/
 			MyController con = new MyController(c);
 			CLI d = new CLI(in, out, c);
 			MyModel m = new MyModel(con);
