@@ -14,6 +14,7 @@ import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
 import algorithms.mazeGenerators.MyMaze3dGenerator;
 import algorithms.mazeGenerators.Position;
+import algorithms.mazeGenerators.SimpleMaze3dGenerator;
 import algorithms.search.Astar;
 import algorithms.search.BFS;
 import algorithms.search.Maze3dDomain;
@@ -25,7 +26,15 @@ import controller.Controller;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
 
-public class MyModel implements Model <Position>{
+/**
+ * <h1>  Model Interface <h1>
+ * This class is doing all calculations touch data
+ * 
+ * @author  Ben Mazliach & Or Moshe
+ * @version 1.0
+ * @since   17/12/15
+ */
+public class MyModel implements Model{
 
 	Controller controller;
 	HashMap<String, Maze3d> mazeInFile;
@@ -47,7 +56,7 @@ public class MyModel implements Model <Position>{
 				if(generate.equals("MyMaze3dGenerator")==true)
 					mg = new MyMaze3dGenerator(x,y,z);
 				else
-					mg = new MyMaze3dGenerator(x,y,z);
+					mg = new SimpleMaze3dGenerator(x,y,z);
 				
 				controller.setMaze3d(mg.getMaze(),name);
 			}
@@ -139,24 +148,36 @@ public class MyModel implements Model <Position>{
 			@Override
 			public void run() {
 				Searchable<Position> s = new Maze3dDomain(maze);
-				if(args[2].equals("BFS")==true)
+				if(args.length>=3 && args.length<5)
 				{
-					BFS<Position> solve = new BFS<Position>(new StateCostComparator<Position>());
-					controller.setSolution(solve.search(s).getSol(),args[1]);
-					controller.printStr("solution for " +args[1]+ " is ready");
+					if(args[2].equals("BFS")==true)
+					{
+						BFS<Position> solve = new BFS<Position>(new StateCostComparator<Position>());
+						controller.setSolution(solve.search(s).getSol(),args[1]);
+						controller.printStr("solution for " +args[1]+ " is ready");
+					}
+					else
+						controller.printStr("Algorithm is not exist");
 				}
-				else if((args[2]+" "+args[3]).equals("Astar Air Distance")==true)
+				else if(args.length>=5)
 				{
-					BFS<Position> solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeAirDistance(s));
-					controller.setSolution(solve.search(s).getSol(),args[1]);
-					controller.printStr("solution for " +args[1]+ " is ready");
+					if((args[2]+" "+args[3]+" "+args[4]).equals("Astar Air Distance")==true)
+					{
+						BFS<Position> solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeAirDistance(s));
+						controller.setSolution(solve.search(s).getSol(),args[1]);
+						controller.printStr("solution for " +args[1]+ " is ready");
+					}
+					else if((args[2]+" "+args[3]+" "+args[4]).equals("Astar Manhattan Distance")==true)
+					{
+						BFS<Position> solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeManhattanDistance(s));
+						controller.setSolution(solve.search(s).getSol(),args[1]);
+						controller.printStr("solution for " +args[1]+ " is ready");
+					}
+					else
+						controller.printStr("Algorithm is not exist");
 				}
-				else if((args[2]+" "+args[3]).equals("Astar Manhattan Distance")==true)
-				{
-					BFS<Position> solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeManhattanDistance(s));
-					controller.setSolution(solve.search(s).getSol(),args[1]);
-					controller.printStr("solution for " +args[1]+ " is ready");
-				}
+				else
+					controller.printStr("Algorithm is not exist");
 			}
 		});
 	}

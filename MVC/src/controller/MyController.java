@@ -11,7 +11,7 @@ import view.View;
 
 public class MyController implements Controller {
 
-	Model<Position> model;
+	Model model;
 	View view;
 	HashMap<String, Command> commandsMap;
 	HashMap<String, Maze3d> maze3dMap;
@@ -95,15 +95,12 @@ public class MyController implements Controller {
 						}
 					}
 				}//display <name>
-				else if((args[0]).equals("display"))
+				else if(maze3dMap.containsKey(args[1]) == true)
 				{
-					if(maze3dMap.containsKey(args[1]) == true)
-					{
-						view.printMaze3d(maze3dMap.get(args[1]).getMaze(), args[1]);
-					}
+					view.printMaze3d(maze3dMap.get(args[1]).getMaze(), args[1]);
 				}
 				else
-					view.printString("Maze " + args[1] + "is not exist!");
+					view.printString("Maze " + args[1] + " is not exist!");
 			}
 		});
 		//save maze <name> <file name>
@@ -166,7 +163,7 @@ public class MyController implements Controller {
 	}
 	
 	@Override
-	public void setModel(Model<Position> model) {
+	public void setModel(Model model) {
 		this.model = model;
 	}
 
@@ -180,6 +177,12 @@ public class MyController implements Controller {
 		if(maze3dMap.containsKey(name)==false)
 		{
 			maze3dMap.put(name, maze);
+			String s = "maze "+name+" is ready";
+			view.printString(s);
+		}
+		else
+		{
+			maze3dMap.replace(name, maze);
 			String s = "maze "+name+" is ready";
 			view.printString(s);
 		}

@@ -7,12 +7,24 @@ import java.util.HashMap;
 
 import controller.Command;
 
+/**
+ * <h1>  CLI Class <h1>
+ * This class manage the Command Line Interface for the client
+ * 
+ * @author  Ben Mazliach & Or Moshe
+ * @version 1.0
+ * @since   17/12/15
+ */
 public class CLI implements Runnable{
 	
 	private BufferedReader in;
 	private PrintWriter out;
 	private HashMap<String, Command> hashMap;
 	
+	/**
+	 * Constructor - initialize CLI
+	 * @param in,out,hashMap BufferedReader ,PrintWriter,HashMap<String, Command>
+	 */
 	public CLI(BufferedReader in,PrintWriter out,HashMap<String, Command> hashMap)
 	{
 		this.in = new BufferedReader(in);
@@ -20,11 +32,18 @@ public class CLI implements Runnable{
 		this.hashMap = hashMap;
 	}
 
+	/**
+	 * Type of Runnable so we override run function
+	 */
 	@Override
 	public void run() {
 		this.start();
 	}
 	
+	/**
+	 * Start the thread manage all commands
+	 */
+
 	public void start()
 	{
 		new Thread(new Runnable() {
@@ -67,11 +86,15 @@ public class CLI implements Runnable{
 							out.println("Error");
 							out.flush();
 						}
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+						//If the input come from file to generate and solve will take time to set solution
+						/*if(hashMap.containsKey("generate maze 3d")==true || hashMap.containsKey("solve")==true )
+						{
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}*/
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -81,23 +104,45 @@ public class CLI implements Runnable{
 		},"cli thread").start();
 	}
 	
+	/**
+	 * Get in
+	 * @return BufferedReader
+	 */
 	public BufferedReader getIn() {
 		return in;
 	}
+	/**
+	 * Set in
+	 * @param BufferedReader
+	 */
 	public void setIn(BufferedReader in) {
 		this.in = in;
 	}
+	/**
+	 * Get out
+	 * @return PrintWriter
+	 */
 	public PrintWriter getOut() {
 		return out;
 	}
+	/**
+	 * Set out
+	 * @param PrintWriter
+	 */
 	public void setOut(PrintWriter out) {
 		this.out = out;
 	}
-
+	/**
+	 * Get hashMap
+	 * @return HashMap<String, Command>
+	 */
 	public HashMap<String, Command> getHashMap() {
 		return hashMap;
 	}
-
+	/**
+	 * Set hashMap
+	 * @param HashMap<String, Command>
+	 */
 	public void setHashMap(HashMap<String, Command> hashMap) {
 		this.hashMap = hashMap;
 	}

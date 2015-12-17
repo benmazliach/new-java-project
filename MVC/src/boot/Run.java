@@ -1,7 +1,6 @@
 package boot;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -20,12 +19,10 @@ public class Run {
 		public static void main(String[] args) { 
 		
 			HashMap<String, Command> c = new HashMap<String, Command>();
-			//c.put("generate maze 3d", new MyCommand("55"));
-			//c.put("dir", new MyCommand("56"));
-			//c.put("exit", new MyCommand("56"));
 			
 			PrintWriter out = null;
-			try {
+			//Exmple of commands
+			/*try {
 				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ben.txt")));
 				out.write("generate maze 3d ben 5 5 5 MyMaze3dGenerator\n");
 				out.write("dir src\n");
@@ -41,16 +38,17 @@ public class Run {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-			out.close();
+			out.close();*/
 			
 			BufferedReader in = null;
-			//in = new BufferedReader(new InputStreamReader(System.in));
-			try {
+			in = new BufferedReader(new InputStreamReader(System.in));
+			/*try {
 				in = new BufferedReader(new InputStreamReader(new FileInputStream("ben.txt")));
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
+			//out = new PrintWriter(new OutputStreamWriter(System.out));
 			try {
 				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("test.txt")));
 			} catch (FileNotFoundException e) {
@@ -63,8 +61,6 @@ public class Run {
 			MyView v = new MyView(con, d);
 			con.setModel(m);
 			con.setView(v);
-			//Thread t = new Thread(d);
-			//t.start();
 			v.start();
 			
 		}
