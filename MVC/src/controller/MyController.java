@@ -70,7 +70,7 @@ public class MyController implements Controller {
 		});
 		
 		//generate 3d maze <name> <x,y,z,type of generate>
-		commandsMap.put("generate maze 3d", new Command() {
+		commandsMap.put("generate 3d maze", new Command() {
 			
 			@Override
 			public void doCommand(String[] args) {

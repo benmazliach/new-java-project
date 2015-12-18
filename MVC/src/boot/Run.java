@@ -21,7 +21,7 @@ public class Run {
 			//Example of commands
 			/*try {
 				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ben.txt")));
-				out.write("generate maze 3d ben 5 5 5 MyMaze3dGenerator\n");
+				out.write("generate 3d maze ben 5 5 5 MyMaze3dGenerator\n");
 				out.write("dir src\n");
 				out.write("display ben\n");
 				out.write("display cross section by Y 2 for ben\n");
