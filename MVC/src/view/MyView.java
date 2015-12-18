@@ -14,7 +14,7 @@ import controller.Controller;
  * @version 1.0
  * @since   17/12/15
  */
-public class MyView implements View {
+public class MyView extends CommonView {
 
 	Controller c;
 	CLI cli;

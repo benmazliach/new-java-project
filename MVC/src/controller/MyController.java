@@ -9,6 +9,13 @@ import algorithms.search.State;
 import model.Model;
 import view.View;
 
+/**
+ * <h1>  MyController class <h1>
+ * This class connect between the Model and View 
+ * @author  Ben Mazliach & Or Moshe
+ * @version 1.0
+ * @since   17/12/15
+ */
 public class MyController implements Controller {
 
 	Model model;
@@ -17,6 +24,10 @@ public class MyController implements Controller {
 	HashMap<String, Maze3d> maze3dMap;
 	HashMap<String, ArrayList<State<Position>>> solutionMap;
 	
+	/**
+	 * Constructor - initialize controller
+	 * @param HashMap<String, Command> commands map
+	 */
 	public MyController(HashMap<String, Command> commandsMap) {
 		this.commandsMap = commandsMap;
 		this.maze3dMap = new HashMap<String, Maze3d>();
@@ -24,6 +35,9 @@ public class MyController implements Controller {
 		putCommandsMap();
 	}
 	
+	/**
+	 * Method that define all commands and put them in command hash map
+	 */
 	public void putCommandsMap()
 	{
 		//dir <path>
@@ -162,16 +176,28 @@ public class MyController implements Controller {
 		});
 	}
 	
+	/**
+	 * Set model
+	 * @param Model model
+	 */
 	@Override
 	public void setModel(Model model) {
 		this.model = model;
 	}
 
+	/**
+	 * Set view
+	 * @param View view
+	 */
 	@Override
 	public void setView(View view) {
 		this.view = view;
 	}
 
+	/**
+	 * Set maze3d to hashMap
+	 * @param Maze3d maze,String maze name
+	 */
 	@Override
 	public void setMaze3d(Maze3d maze,String name) {
 		if(maze3dMap.containsKey(name)==false)
@@ -188,16 +214,28 @@ public class MyController implements Controller {
 		}
 	}
 
+	/**
+	 * Transfer to view two-dimensional array that contain the section
+	 * @param Maze3d maze.String maze name,int number section,char type section(X,Y,Z)
+	 */
 	@Override
 	public void crossSection(int[][] arr, char sectionType, String name , int section) {
 		view.crossSectionPrint(arr, sectionType, name , section);
 	}
 
+	/**
+	 * Transfer to view string that he sould to present
+	 * @param String str
+	 */
 	@Override
 	public void printStr(String str) {
 		view.printString(str);
 	}
 
+	/**
+	 * Load maze from hashmap
+	 * @param Maze3d maze, String mazename
+	 */
 	@Override
 	public void loadMaze(Maze3d maze, String name) {
 		if(maze3dMap.containsKey(name)==false)
@@ -212,6 +250,10 @@ public class MyController implements Controller {
 		}
 	}
 
+	/**
+	 * Transfer to view arraylist that contain the solution to maze
+	 * @param ArrayList<State<Position>> solution, String maze name
+	 */
 	@Override
 	public void setSolution(ArrayList<State<Position>> solution, String name) {
 		solutionMap.put(name, solution);

@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.HashMap;
-
 import controller.Command;
 import controller.MyController;
 import model.MyModel;
@@ -19,7 +18,7 @@ public class Run {
 			HashMap<String, Command> c = new HashMap<String, Command>();
 			
 			PrintWriter out = null;
-			//Exmple of commands
+			//Example of commands
 			/*try {
 				out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ben.txt")));
 				out.write("generate maze 3d ben 5 5 5 MyMaze3dGenerator\n");

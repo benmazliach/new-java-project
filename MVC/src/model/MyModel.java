@@ -27,25 +27,33 @@ import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
 
 /**
- * <h1>  Model Interface <h1>
+ * <h1>  MyModel class <h1>
  * This class is doing all calculations touch data
  * 
  * @author  Ben Mazliach & Or Moshe
  * @version 1.0
  * @since   17/12/15
  */
-public class MyModel implements Model{
+public class MyModel extends CommonModel{
 
 	Controller controller;
 	HashMap<String, Maze3d> mazeInFile;
 	ExecutorService threadpool;
 	
+	/**
+	 * Constructor - initialize model
+	 * @param Controller,CLI
+	 */
 	public MyModel(Controller controller) {
 		this.controller = controller;
 		this.mazeInFile = new HashMap<String, Maze3d>();
 		this.threadpool = Executors.newFixedThreadPool(10);  
 	}
-
+	
+	/**
+	 * Creates the maze
+	 * @param int x,int y,int z(size),String type of generation,String maze name
+	 */
 	@Override
 	public void generateMaze3d(int x, int y, int z, String generate,String name) {
 		threadpool.execute(new Runnable() {
@@ -63,7 +71,10 @@ public class MyModel implements Model{
 		});
 	}
 	
-
+	/**
+	 * Creates two-dimensional array that contain the section
+	 * @param Maze3d maze.String maze name,int number section,char type section(X,Y,Z)
+	 */
 	@Override
 	public void crossBySection(Maze3d maze, String name, int section, char typeSection) {
 		if(typeSection=='x')
@@ -74,16 +85,26 @@ public class MyModel implements Model{
 			controller.crossSection(maze.getCrossSectionByZ(section), typeSection, name , section);
 	}
 
-	
-	
+	/**
+	 * Get controller
+	 * @return Controller controller
+	 */
 	public Controller getController() {
 		return controller;
 	}
 
+	/**
+	 * Set controller
+	 * @param Controller controller
+	 */
 	public void setController(Controller controller) {
 		this.controller = controller;
 	}
 
+	/**
+	 * Save maze in file
+	 * @param Maze3d maze name, String maze name, String file Name
+	 */
 	@Override
 	public void saveMaze(Maze3d maze, String name, String fileName) {
 		MyCompressorOutputStream outFile;
@@ -101,6 +122,10 @@ public class MyModel implements Model{
 		}
 	}
 
+	/**
+	 * Load maze from file
+	 * @param String maze name, String file Name
+	 */
 	@Override
 	public void loadMaze(String name , String fileName) {
 		MyDecompressorInputStream inFile;
@@ -124,12 +149,20 @@ public class MyModel implements Model{
 		}
 	}
 
+	/**
+	 * Calculate size maze in the memory
+	 * @param Maze3d maze name, String maze name
+	 */
 	@Override
 	public void mazeSize(Maze3d maze, String name) {
 		String s = "maze size " + name + " is " +(maze.getXSize()*maze.getYSize()*maze.getZSize()*Integer.SIZE)/8+ " bytes";
 		controller.printStr(s);
 	}
 
+	/**
+	 * Calculate size maze in the file
+	 * @param String[] args
+	 */
 	@Override
 	public void fileSize(String[] args) {
 		if(mazeInFile.containsKey(args[2])==true)
@@ -141,6 +174,10 @@ public class MyModel implements Model{
 			controller.printStr("File " + args[2] + " is not exist!");
 	}
 
+	/**
+	 * Creates solution to the maze
+	 * @param String[] args, Maze3d maze
+	 */
 	@Override
 	public void solveMaze(String[] args, Maze3d maze) {
 		threadpool.execute(new Runnable() {
@@ -182,6 +219,9 @@ public class MyModel implements Model{
 		});
 	}
 
+	/**
+	 * Close all program
+	 */
 	@Override
 	public void exit() {
 		threadpool.shutdown();
@@ -190,5 +230,6 @@ public class MyModel implements Model{
 		} catch (InterruptedException e) {
 			controller.printStr(e.getMessage());
 		}
+		controller.printStr("Exit");
 	}
 }
