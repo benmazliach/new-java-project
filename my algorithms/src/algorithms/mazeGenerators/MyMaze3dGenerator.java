@@ -197,11 +197,14 @@ public class MyMaze3dGenerator extends CommonMaze3dGenerator{
 		int x2 = rand.nextInt(x); 
 		int y2 = rand.nextInt(y); 
 		int z2 = rand.nextInt(z);
-		while((x1==x2 && y1==y2 && z1==z2) || maze.returnValue(x2, y2, z2)==1)
+		if(x>2&&y>2&&z>2)
 		{
-			x2 = rand.nextInt(x); 
-			y2 = rand.nextInt(y); 
-			z2 = rand.nextInt(z);
+			while((x1==x2 && y1==y2 && z1==z2) || maze.returnValue(x2, y2, z2)==1)
+			{
+				x2 = rand.nextInt(x); 
+				y2 = rand.nextInt(y); 
+				z2 = rand.nextInt(z);
+			}
 		}
 		p =new Position(x2,y2,z2);
 		maze.setGoalPosition(p);

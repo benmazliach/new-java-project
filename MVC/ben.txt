@@ -1,0 +1,3 @@
+generate maze 3d ben 5 5 5 MyMaze3dGenerator
+display ben
+exit
