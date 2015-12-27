@@ -6,11 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Observable;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPOutputStream;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
@@ -22,6 +25,7 @@ import algorithms.search.Maze3dDomain;
 import algorithms.search.MazeAirDistance;
 import algorithms.search.MazeManhattanDistance;
 import algorithms.search.Searchable;
+import algorithms.search.Solution;
 import algorithms.search.State;
 import comperators.StateCostComparator;
 import io.MyCompressorOutputStream;
@@ -29,12 +33,13 @@ import io.MyDecompressorInputStream;
 import algorithms.mazeGenerators.Position;
 
 
-public class MyModel extends Observable implements Model{
-
+public class MyModel extends Observable implements Model
+{
 	private HashMap<String, Maze3d> mazeInFile;
 	private ExecutorService threadpool;
 	private HashMap<String, Maze3d> maze3dMap;
-	private HashMap<String, ArrayList<State<Position>>> solutionMap;
+	private HashMap<String,Solution<Position>> solutionMap;
+	private HashMap<Maze3d, Solution<Position>> mazeSolMap;
 	private int[][] cross;
 	private int index;
 
@@ -42,22 +47,23 @@ public class MyModel extends Observable implements Model{
 		this.mazeInFile = new HashMap<String, Maze3d>();
 		this.threadpool = Executors.newFixedThreadPool(10);  
 		this.maze3dMap = new HashMap<String, Maze3d>();
-		this.solutionMap = new HashMap<String, ArrayList<State<Position>>>();
+		this.solutionMap = new HashMap<String, Solution<Position>>();
+		this.mazeSolMap = new HashMap<Maze3d, Solution<Position>>();
 		cross = null;
 	}
 	
 	@Override
 	public void generateMaze3d(int x, int y, int z, String generate,String name) {
-		threadpool.execute(new Runnable() {
-			
+		threadpool.submit(new Callable<Maze3d>() {
 			@Override
-			public void run() {
+			public Maze3d call() {
 				Maze3dGenerator mg = null;
 				if(generate.equals("MyMaze3dGenerator")==true)
 					mg = new MyMaze3dGenerator(x,y,z);
 				else
 					mg = new SimpleMaze3dGenerator(x,y,z);
 				setMaze3d(mg.getMaze(), name);
+				return mg.getMaze();
 			}
 		});
 	}
@@ -188,17 +194,24 @@ public class MyModel extends Observable implements Model{
 	
 	@Override
 	public void solveMaze(String[] args, Maze3d maze) {
-		threadpool.execute(new Runnable() {
-			
+		if(mazeSolMap.containsKey(maze)==true)
+			notifyString("Solution for maze "+args[1]+" is alredy exists");
+		else
+		{
+		threadpool.submit(new Callable<Solution<Position>>() {
 			@Override
-			public void run() {
+			public Solution<Position> call() {
 				Searchable<Position> s = new Maze3dDomain(maze);
+				BFS<Position> solve = null;
+				Solution<Position> sol = null;
 				if(args.length>=3 && args.length<5)
 				{
 					if(args[2].equals("BFS")==true)
 					{
-						BFS<Position> solve = new BFS<Position>(new StateCostComparator<Position>());
-						setSolution(solve.search(s).getSol(),args[1]);
+						solve = new BFS<Position>(new StateCostComparator<Position>());
+						sol = new Solution<Position>(solve.search(s).getSol());
+						setMazeSol(sol, maze);
+						setSolution(sol,args[1]);
 					}
 					else
 						notifyString("Algorithm is not exist");
@@ -207,38 +220,64 @@ public class MyModel extends Observable implements Model{
 				{
 					if((args[2]+" "+args[3]+" "+args[4]).equals("Astar Air Distance")==true)
 					{
-						BFS<Position> solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeAirDistance(s));
-						setSolution(solve.search(s).getSol(),args[1]);
+						solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeAirDistance(s));
+						sol = new Solution<Position>(solve.search(s).getSol());
+						setMazeSol(sol, maze);
+						setSolution(sol,args[1]);
 					}
 					else if((args[2]+" "+args[3]+" "+args[4]).equals("Astar Manhattan Distance")==true)
 					{
-						BFS<Position> solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeManhattanDistance(s));
-						setSolution(solve.search(s).getSol(),args[1]);
+						solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeManhattanDistance(s));
+						sol = new Solution<Position>(solve.search(s).getSol());
+						setMazeSol(sol, maze);
+						setSolution(sol,args[1]);
 					}
 					else
 						notifyString("Algorithm is not exist");
 				}
 				else
 					notifyString("Algorithm is not exist");
+				return sol;
 			}
 		});
+		}
 	}
 
-	public void setSolution(ArrayList<State<Position>> solution, String name) {
+	public void setSolution(Solution<Position> solution, String name) {
 		if(solutionMap.containsKey(name)==false)
 		{
 			solutionMap.put(name, solution);
 			notifyString("solution for " +name+ " is ready");
 		}
-		else
+	}
+	
+	public void setMazeSol(Solution<Position> solution, Maze3d maze) {
+		if(mazeSolMap.containsKey(maze)==false)
 		{
-			solutionMap.replace(name, solution);
-			notifyString("solution for " +name+ " is ready");
+			mazeSolMap.put(maze, solution);
 		}
 	}
 	
 	@Override
 	public void exit() {
+		int i = 0;
+		Collection<Maze3d> arr =  maze3dMap.values();
+		MyCompressorOutputStream outFile;
+		for (Maze3d maze3d : arr) {
+			try {
+				outFile = new MyCompressorOutputStream(new FileOutputStream(""+(i++)+".zip"));
+				outFile.write(maze3d.toByteArray());
+				outFile.close();
+				GZIPOutputStream zip = new GZIPOutputStream(outFile);
+				zip.write(maze3d.toByteArray());
+				zip.flush();
+				zip.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		threadpool.shutdown();
 		try {
 			while(!(threadpool.awaitTermination(10, TimeUnit.SECONDS)));
@@ -273,7 +312,7 @@ public class MyModel extends Observable implements Model{
 	}
 
 	@Override
-	public ArrayList<State<Position>> getSolution(String name) {
+	public Solution<Position> getSolution(String name) {
 		return solutionMap.get(name);
 	}
 	

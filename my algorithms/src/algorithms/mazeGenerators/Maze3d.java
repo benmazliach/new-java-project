@@ -496,4 +496,15 @@ public class Maze3d{
 		s.close();
 	}
 	
+	@Override
+	public int hashCode() {
+		String s = "" + this.getXSize() + this.getYSize() + this.getZSize() + this.getStartPosition().toString() + this.getGoalPosition().toString();
+		return s.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return equals((Maze3d)obj);
+	}
+	
 }

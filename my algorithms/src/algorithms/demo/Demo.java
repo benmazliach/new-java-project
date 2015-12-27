@@ -2,6 +2,7 @@ package algorithms.demo;
 
 import java.util.ArrayList;
 
+import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
 import algorithms.mazeGenerators.MyMaze3dGenerator;
 import algorithms.mazeGenerators.Position;
@@ -112,6 +113,6 @@ public class Demo {
 			System.out.println(state + " " +state.getCost());
 		}
 		
+		
 	}
-
 }

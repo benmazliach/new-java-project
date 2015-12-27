@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
 import algorithms.search.State;
 
 public class MyView extends Observable implements View {
@@ -69,11 +70,12 @@ public class MyView extends Observable implements View {
 	}
 
 	@Override
-	public void displaySolution(ArrayList<State<Position>> arrayList,String name) {
-		if(arrayList!=null)
+	public void displaySolution(Solution<Position> sol,String name) {
+		ArrayList<State<Position>> print = sol.getSol();
+		if(sol!=null)
 		{
 			printString("Solution of maze "+name+" is:");
-			for (State<Position> state : arrayList) {
+			for (State<Position> state : print) {
 				cli.getOut().println(state.toString());
 			}
 			cli.getOut().flush();

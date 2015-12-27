@@ -1,11 +1,19 @@
 package boot;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.zip.GZIPOutputStream;
 
+import algorithms.mazeGenerators.Maze3d;
+import io.MyCompressorOutputStream;
 import model.MyModel;
 import presenter.Command;
 import presenter.MyPresenter;
