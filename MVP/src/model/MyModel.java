@@ -5,19 +5,21 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
 import algorithms.mazeGenerators.MyMaze3dGenerator;
+import algorithms.mazeGenerators.Position;
 import algorithms.mazeGenerators.SimpleMaze3dGenerator;
 import algorithms.search.Astar;
 import algorithms.search.BFS;
@@ -26,11 +28,9 @@ import algorithms.search.MazeAirDistance;
 import algorithms.search.MazeManhattanDistance;
 import algorithms.search.Searchable;
 import algorithms.search.Solution;
-import algorithms.search.State;
 import comperators.StateCostComparator;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
-import algorithms.mazeGenerators.Position;
 
 
 public class MyModel extends Observable implements Model
@@ -50,6 +50,7 @@ public class MyModel extends Observable implements Model
 		this.solutionMap = new HashMap<String, Solution<Position>>();
 		this.mazeSolMap = new HashMap<Maze3d, Solution<Position>>();
 		cross = null;
+		loadMaze3dMapZip();
 	}
 	
 	@Override
@@ -260,24 +261,7 @@ public class MyModel extends Observable implements Model
 	
 	@Override
 	public void exit() {
-		int i = 0;
-		Collection<Maze3d> arr =  maze3dMap.values();
-		MyCompressorOutputStream outFile;
-		for (Maze3d maze3d : arr) {
-			try {
-				outFile = new MyCompressorOutputStream(new FileOutputStream(""+(i++)+".zip"));
-				outFile.write(maze3d.toByteArray());
-				outFile.close();
-				GZIPOutputStream zip = new GZIPOutputStream(outFile);
-				zip.write(maze3d.toByteArray());
-				zip.flush();
-				zip.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		saveMaze3dMapZip();
 		threadpool.shutdown();
 		try {
 			while(!(threadpool.awaitTermination(10, TimeUnit.SECONDS)));
@@ -288,6 +272,49 @@ public class MyModel extends Observable implements Model
 		notifyString("Exit");
 	}
 
+	@Override
+	public void saveMaze3dMapZip()
+	{
+		ObjectOutputStream obj = null;
+		try {
+			obj = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("mazeMap.zip")));
+			obj.writeObject(maze3dMap);
+			obj.flush();
+		} catch (FileNotFoundException e) {
+			notifyString(e.getMessage());
+		} catch (IOException e) {
+			notifyString(e.getMessage());
+		} finally {
+			try {
+				obj.close();
+			} catch (IOException e) {
+				notifyString(e.getMessage());
+			}
+		}		
+	}
+	
+	@Override
+	public void loadMaze3dMapZip()
+	{
+		ObjectInputStream obj = null;
+		try {
+			obj = new ObjectInputStream(new GZIPInputStream(new FileInputStream("mazeMap.zip")));
+			maze3dMap = (HashMap<String, Maze3d>) obj.readObject();
+		} catch (FileNotFoundException e) {
+			notifyString(e.getMessage());
+		} catch (IOException e) {
+			notifyString(e.getMessage());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				obj.close();
+			} catch (IOException e) {
+				notifyString(e.getMessage());
+			}
+		}
+	}
+	
 	public int[][] getCross() {
 		return cross;
 	}

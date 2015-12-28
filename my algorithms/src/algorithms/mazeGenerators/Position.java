@@ -1,5 +1,7 @@
 package algorithms.mazeGenerators;
 
+import java.io.Serializable;
+
 /**
 *<h1> Position class <h1>
 * This class present position in the maze
@@ -9,11 +11,17 @@ package algorithms.mazeGenerators;
 * @since   29/11/15
 */
 
-public class Position {
+public class Position implements Serializable{
 	
 	private int pX;
 	private int pY;
 	private int pZ;
+	
+	/**
+	 * Default Constructor that creates Position
+	 */
+	public Position() {
+	}
 	
 	/**
 	 * Constructor that creates Position

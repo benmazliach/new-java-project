@@ -1,7 +1,9 @@
 package algorithms.mazeGenerators;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 
 /**
 *<h1>  Maze3d class <h1>
@@ -13,11 +15,22 @@ import java.util.Scanner;
 * @since   29/11/15
 */
 
-public class Maze3d{
+public class Maze3d implements Serializable{
 	
 	private int [][][] maze;
 	private Position startPosition;
 	private Position goalPosition;
+	
+	
+	/**
+	 * Default Constructor that creates Maze3d
+	 */
+	public Maze3d() {
+		this.maze = null;
+		this.startPosition = null;
+		this.goalPosition = null;
+	}
+	
 	
 	/**
 	 * Constructor that creates Maze3d

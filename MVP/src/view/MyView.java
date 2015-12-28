@@ -10,12 +10,10 @@ import algorithms.search.State;
 public class MyView extends Observable implements View {
 
 	private CLI cli;
-	private String command;
 	private String[] args;
 	
-	public void setCommand(String command,String[] args)
+	public void setCommand(String[] args)
 	{
-		this.command = command;
 		this.args = args;
 		this.setChanged();
 		notifyObservers();
@@ -71,9 +69,9 @@ public class MyView extends Observable implements View {
 
 	@Override
 	public void displaySolution(Solution<Position> sol,String name) {
-		ArrayList<State<Position>> print = sol.getSol();
 		if(sol!=null)
 		{
+			ArrayList<State<Position>> print = sol.getSol();
 			printString("Solution of maze "+name+" is:");
 			for (State<Position> state : print) {
 				cli.getOut().println(state.toString());
@@ -81,17 +79,9 @@ public class MyView extends Observable implements View {
 			cli.getOut().flush();
 		}
 		else
-			printString("Solution is not exist");
+			this.printString("Solution is not exist");
 	}
-
-	public String getCommand() {
-		return command;
-	}
-
-	public void setCommand(String command) {
-		this.command = command;
-	}
-
+	
 	public String[] getArgs() {
 		return args;
 	}

@@ -1,11 +1,8 @@
 package model;
 
-import java.util.ArrayList;
-
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
-import algorithms.search.State;
 
 public interface Model {
 	
@@ -28,4 +25,6 @@ public interface Model {
 	public void notifyString(String str);
 	public Solution<Position> getSolution(String name);
 	public boolean checkSolutionHash(String name);
+	public void saveMaze3dMapZip();
+	public void loadMaze3dMapZip();
 }

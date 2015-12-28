@@ -13,10 +13,10 @@ public class MyPresenter implements Presenter,Observer{
 	View view;
 	HashMap<String, Command> commandsMap;
 	
-	public MyPresenter(HashMap<String, Command> commandsMap,Model model,View view) {
+	public MyPresenter(Model model,View view) {
 		this.view = view;
 		this.model = model;
-		this.commandsMap = commandsMap;
+		this.commandsMap = new HashMap<String, Command>();
 		putCommandsMap();
 	}
 	
@@ -24,9 +24,37 @@ public class MyPresenter implements Presenter,Observer{
 	public void update(Observable o, Object arg) {
 		if(o==view)
 		{
-			String s = view.getCommand();
-			String[] args = view.getArgs();
-			commandsMap.get(s).doCommand(args);
+			//if(arg.getClass().getName().equals("[Ljava.lang.String"))
+			{
+				String[] args = view.getArgs();
+				boolean dos = false;
+				String s = null;
+				for(int i=0;i<args.length;i++)
+				{
+					if(commandsMap.containsKey(s)== true && dos == false)
+					{
+						dos = true;
+					}
+					else
+					{
+						if(dos==false)
+						{
+							if(s==null)
+								s = args[i];
+							else if(s!=null)
+								s = s + " " +args[i];
+						}
+					}
+				}
+				if(commandsMap.containsKey(s)==true)
+				{
+					commandsMap.get(s).doCommand(args);
+				}
+				else
+				{
+					view.printString("Error");
+				}
+			}
 		}
 		if(o==model)
 		{
