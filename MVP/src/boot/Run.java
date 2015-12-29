@@ -1,5 +1,7 @@
 package boot;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,7 +11,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.zip.GZIPOutputStream;
+
+import javax.xml.XMLConstants;
+import javax.xml.stream.XMLOutputFactory;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.MyMaze3dGenerator;
@@ -21,13 +27,36 @@ import view.MyView;
 public class Run {
 		
 	public static void main(String[] args) { 
+		presenter.Properties pr = new presenter.Properties();
+		pr.setAlgorithmGenerateName("MyMaze3dGenerator");
+		pr.setAlgorithmSearchName("BFS");
+		pr.setNumOfThreads(10);
+		pr.setxSize(5);
+		pr.setySize(5);
+		pr.setzSize(5);
+		pr.setUserInterface("CLI");
+		pr.setMazeName("mainMaze");
+		
+		/*try {
+			FileOutputStream file = new FileOutputStream("Properties.xml");
+			ObjectOutputStream obj = new ObjectOutputStream(file);
+			XMLEncoder s = new XMLEncoder(obj);
+			s.writeObject(p);
+			s.flush();
+			s.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
+		
 		BufferedReader in = null;
 		in = new BufferedReader(new InputStreamReader(System.in));
 		PrintWriter out = null;
 		out = new PrintWriter(new OutputStreamWriter(System.out));
 		
 		
-		MyModel m = new MyModel();
+		MyModel m = new MyModel(pr);
 		CLI cli = new CLI(in,out);
 		MyView v = new MyView(cli);
 		cli.setView(v);
@@ -106,6 +135,7 @@ public class Run {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}*/
+		
 	}
 }
 

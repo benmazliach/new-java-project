@@ -31,42 +31,68 @@ import algorithms.search.Solution;
 import comperators.StateCostComparator;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
+import presenter.Properties;
 
 
 public class MyModel extends Observable implements Model
 {
 	private HashMap<String, Maze3d> mazeInFile;
-	private ExecutorService threadpool;
 	private HashMap<String, Maze3d> maze3dMap;
 	private HashMap<String,Solution<Position>> solutionMap;
 	private HashMap<Maze3d, Solution<Position>> mazeSolMap;
+	private ExecutorService threadpool;
 	private int[][] cross;
 	private int index;
+	private Properties properties;
 
-	public MyModel() {
+	public MyModel(Properties properties) {
 		this.mazeInFile = new HashMap<String, Maze3d>();
-		this.threadpool = Executors.newFixedThreadPool(10);  
 		this.maze3dMap = new HashMap<String, Maze3d>();
 		this.solutionMap = new HashMap<String, Solution<Position>>();
 		this.mazeSolMap = new HashMap<Maze3d, Solution<Position>>();
+		this.properties = properties;
 		cross = null;
 		loadMaze3dMapZip();
+		this.threadpool = Executors.newFixedThreadPool(properties.getNumOfThreads());  
 	}
 	
 	@Override
 	public void generateMaze3d(int x, int y, int z, String generate,String name) {
-		threadpool.submit(new Callable<Maze3d>() {
+		if(maze3dMap.containsKey(name)==true)
+			notifyString("Maze "+name+" is alredy exists");
+		else
+		{
+			Callable<Maze3d> call =  new Callable<Maze3d>() {
+				@Override
+				public Maze3d call() {
+					Maze3dGenerator mg = null;
+					if(generate.equals("MyMaze3dGenerator")==true)
+						mg = new MyMaze3dGenerator(x,y,z);
+					else
+						mg = new SimpleMaze3dGenerator(x,y,z);
+					setMaze3d(mg.getMaze(), name);
+					return mg.getMaze();
+				}
+			};
+			threadpool.submit(call);
+		}
+	}
+	
+	@Override
+	public void generateMaze3d() {
+		Callable<Maze3d> call =  new Callable<Maze3d>() {
 			@Override
 			public Maze3d call() {
 				Maze3dGenerator mg = null;
-				if(generate.equals("MyMaze3dGenerator")==true)
-					mg = new MyMaze3dGenerator(x,y,z);
+				if(properties.getAlgorithmGenerateName().equals("MyMaze3dGenerator")==true)
+					mg = new MyMaze3dGenerator(properties.getxSize(),properties.getySize(),properties.getzSize());
 				else
-					mg = new SimpleMaze3dGenerator(x,y,z);
-				setMaze3d(mg.getMaze(), name);
+					mg = new SimpleMaze3dGenerator(properties.getxSize(),properties.getySize(),properties.getzSize());
+				setMaze3d(mg.getMaze(),properties.getMazeName());
 				return mg.getMaze();
 			}
-		});
+		};
+		threadpool.submit(call);
 	}
 	
 	public int[][][] getArrayMaze3d(String name)
@@ -199,7 +225,7 @@ public class MyModel extends Observable implements Model
 			notifyString("Solution for maze "+args[1]+" is alredy exists");
 		else
 		{
-		threadpool.submit(new Callable<Solution<Position>>() {
+		Callable<Solution<Position>> call = new Callable<Solution<Position>>() {
 			@Override
 			public Solution<Position> call() {
 				Searchable<Position> s = new Maze3dDomain(maze);
@@ -240,10 +266,48 @@ public class MyModel extends Observable implements Model
 					notifyString("Algorithm is not exist");
 				return sol;
 			}
-		});
+		};
+		threadpool.submit(call);
 		}
 	}
 
+	@Override
+	public void solveMaze() {
+		Callable<Solution<Position>> call = new Callable<Solution<Position>>() {
+			@Override
+			public Solution<Position> call() {
+				Searchable<Position> s = new Maze3dDomain(maze3dMap.get(properties.getMazeName()));
+				BFS<Position> solve = null;
+				Solution<Position> sol = null;
+				if(properties.getAlgorithmSearchName().equals("BFS")==true)
+				{
+					solve = new BFS<Position>(new StateCostComparator<Position>());
+					sol = new Solution<Position>(solve.search(s).getSol());
+					setMazeSol(sol, maze3dMap.get(properties.getMazeName()));
+					setSolution(sol,properties.getMazeName());
+				}
+				else if(properties.getAlgorithmSearchName().equals("Astar Air Distance")==true)
+				{
+						solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeAirDistance(s));
+						sol = new Solution<Position>(solve.search(s).getSol());
+						setMazeSol(sol, maze3dMap.get(properties.getMazeName()));
+						setSolution(sol,properties.getMazeName());
+				}
+				else if(properties.getAlgorithmSearchName().equals("Astar Manhattan Distance")==true)
+				{
+					solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeManhattanDistance(s));
+					sol = new Solution<Position>(solve.search(s).getSol());
+					setMazeSol(sol, maze3dMap.get(properties.getMazeName()));
+					setSolution(sol, properties.getMazeName());
+				}
+				else
+					notifyString("Algorithm is not exist");
+			return sol;
+			}
+		};
+		threadpool.submit(call);
+	}
+	
 	public void setSolution(Solution<Position> solution, String name) {
 		if(solutionMap.containsKey(name)==false)
 		{
@@ -261,6 +325,7 @@ public class MyModel extends Observable implements Model
 	
 	@Override
 	public void exit() {
+		//Zip save
 		saveMaze3dMapZip();
 		threadpool.shutdown();
 		try {
@@ -293,6 +358,7 @@ public class MyModel extends Observable implements Model
 		}		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void loadMaze3dMapZip()
 	{
@@ -308,7 +374,8 @@ public class MyModel extends Observable implements Model
 			e.printStackTrace();
 		} finally {
 			try {
-				obj.close();
+				if(obj!=null)
+					obj.close();
 			} catch (IOException e) {
 				notifyString(e.getMessage());
 			}
@@ -347,6 +414,10 @@ public class MyModel extends Observable implements Model
 	public boolean checkSolutionHash(String name)
 	{
 		return solutionMap.containsKey(name);
+	}
+
+	public Properties getProperties() {
+		return properties;
 	}
 }
 

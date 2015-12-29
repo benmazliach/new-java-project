@@ -24,36 +24,33 @@ public class MyPresenter implements Presenter,Observer{
 	public void update(Observable o, Object arg) {
 		if(o==view)
 		{
-			//if(arg.getClass().getName().equals("[Ljava.lang.String"))
+			String[] args = view.getArgs();
+			boolean dos = false;
+			String s = null;
+			for(int i=0;i<args.length;i++)
 			{
-				String[] args = view.getArgs();
-				boolean dos = false;
-				String s = null;
-				for(int i=0;i<args.length;i++)
+				if(commandsMap.containsKey(s)== true && dos == false)
 				{
-					if(commandsMap.containsKey(s)== true && dos == false)
-					{
-						dos = true;
-					}
-					else
-					{
-						if(dos==false)
-						{
-							if(s==null)
-								s = args[i];
-							else if(s!=null)
-								s = s + " " +args[i];
-						}
-					}
-				}
-				if(commandsMap.containsKey(s)==true)
-				{
-					commandsMap.get(s).doCommand(args);
+					dos = true;
 				}
 				else
 				{
-					view.printString("Error");
+					if(dos==false)
+					{
+						if(s==null)
+							s = args[i];
+						else if(s!=null)
+							s = s + " " +args[i];
+					}
 				}
+			}
+			if(commandsMap.containsKey(s)==true)
+			{
+				commandsMap.get(s).doCommand(args);
+			}
+			else
+			{
+				view.printString("Error");
 			}
 		}
 		if(o==model)
@@ -64,11 +61,9 @@ public class MyPresenter implements Presenter,Observer{
 				int index = model.getIndex();
 				switch (index) {
 				case 0: view.printString(str);
-						 break;
+						break;
 				case 1: String[] args = str.split(" ");
 						view.crossSectionPrint(model.getCross(), args[0], args[1], args[2]);
-						break;
-				case 2: view.printString(str);
 						break;
 				}
 			}
@@ -111,11 +106,20 @@ public class MyPresenter implements Presenter,Observer{
 			
 			@Override
 			public void doCommand(String[] args) {
-				int x = Integer.parseInt(args[4]);
-				int y = Integer.parseInt(args[5]);
-				int z = Integer.parseInt(args[6]);
+				if(args.length==8)
+				{
+					int x = Integer.parseInt(args[4]);
+					int y = Integer.parseInt(args[5]);
+					int z = Integer.parseInt(args[6]);
 				
-				model.generateMaze3d(x, y, z, args[7], args[3]);
+					model.generateMaze3d(x, y, z, args[7], args[3]);
+				}
+				else if(args.length==3)
+				{
+					model.generateMaze3d();
+				}
+				else
+					view.printString("Error");
 			}
 		});
 		
