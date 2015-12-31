@@ -1,16 +1,14 @@
 package view;
 
 import java.util.ArrayList;
-import java.util.Observable;
 
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 import algorithms.search.State;
 
-public class MyView extends Observable implements View {
+public class MyView extends CommonView{
 
 	private CLI cli;
-	private String[] args;
 	
 	public void setCommand(String[] args)
 	{
