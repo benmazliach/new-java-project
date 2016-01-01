@@ -10,12 +10,6 @@ public class MyView extends CommonView{
 
 	private CLI cli;
 	
-	public void setCommand(String[] args)
-	{
-		this.args = args;
-		this.setChanged();
-		notifyObservers();
-	}
 	
 	public MyView(CLI cli) {
 		this.cli = cli;

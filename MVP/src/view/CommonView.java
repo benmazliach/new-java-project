@@ -30,5 +30,11 @@ public abstract class CommonView extends Observable implements View {
 	 * print cross by sectionType
 	 * @param int[][],char,String,int - the cross maze,section type,maze name,section index
 	 */
+	public void setCommand(String[] args)
+	{
+		this.args = args;
+		this.setChanged();
+		notifyObservers();
+	}
 
 }
