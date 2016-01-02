@@ -1,4 +1,5 @@
 package view;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -8,6 +9,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -21,6 +23,7 @@ import presenter.MyPresenter;
 public class MenuWindow extends BasicWindow implements View{
 	
 	private String[] args;
+	private String[] mazes;
 	
 	public MenuWindow(String title, int width, int height) {
 		super(title, width, height);
@@ -45,53 +48,34 @@ public class MenuWindow extends BasicWindow implements View{
 	
 	@Override
 	void initWidgets() {
-		shell.setLayout(new GridLayout(1,false));
-		
-		//new Label(shell, SWT.LEFT).setText("Menu");
+		shell.setLayout(new GridLayout(2,false));
 		
 		//generate maze button
 		Button generateButton=new Button(shell, SWT.PUSH);
 		generateButton.setText("Generate maze3d");
-		generateButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		generateButton.setLayoutData(new GridData(SWT.FILL, SWT.None, false, false, 1, 1));
+		
+		//
+		MazeDisplayer mazeDisplayer = new Maze3D(shell, SWT.BORDER);
+		mazeDisplayer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
+		mazeDisplayer.setMazeData(new int[][]{
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{1,0,0,0,0,0,0,0,1,1,0,1,0,0,1},
+			{0,0,1,1,1,1,1,0,0,1,0,1,0,1,1},
+			{1,1,1,0,0,0,1,0,1,1,0,1,0,0,1},
+			{1,0,1,0,1,1,1,0,0,0,0,1,1,0,1},
+			{1,1,0,0,0,1,0,0,1,1,1,1,0,0,1},
+			{1,0,0,1,0,0,1,0,0,0,0,1,0,1,1},
+			{1,0,1,1,0,1,1,0,1,1,0,0,0,1,1},
+			{1,0,0,0,0,0,0,0,0,1,0,1,0,0,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,0,1,1},
+		});
+		mazeDisplayer.displayMaze();
 				
 		//dispaly maze button
 		Button displayMazeButton=new Button(shell, SWT.PUSH);
 		displayMazeButton.setText("Display maze");
 		displayMazeButton.setLayoutData(new GridData(SWT.FILL, SWT.None, false, false, 1, 1));
-		//exit
-		shell.addListener(SWT.Close, new Listener() {
-		    	@Override
-		      public void handleEvent(Event event) {
-		    		MessageBox messageBox = new MessageBox(shell,SWT.ICON_QUESTION| SWT.YES | SWT.NO);
-		    		messageBox.setMessage("Do you really want to exit?");
-		    		event.doit = messageBox.open () == SWT.YES;
-		      }
-		 });
-		
-		/*generateButton.addSelectionListener(new SelectionListener() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				{
-					@Override
-					public void run() {
-						display.syncExec(new Runnable() {
-							@Override
-							public void run() {
-								randomWalk(maze);
-							}
-						});
-					}
-				};				
-				timer.scheduleAtFixedRate(task, 0, 100);				
-				startButton.setEnabled(false);
-				stopButton.setEnabled(true);
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {}
-		});*/
-		
 		
 		generateButton.addSelectionListener(new SelectionListener() {
 			
@@ -141,6 +125,10 @@ public class MenuWindow extends BasicWindow implements View{
 								String s = "generate 3d maze "+t1.getText()+" "+t2.getText()+" "+t3.getText()+" "+t4.getText()+" "+combo1.getText();
 								String[] args = s.split(" ");
 								setCommand(args);
+								MessageBox ready = new MessageBox(generateShell , SWT.ICON_INFORMATION | SWT.YES);
+								ready.setMessage("Maze saved");
+								ready.open();
+								generateShell.close();
 							}
 							else
 							{
@@ -154,7 +142,7 @@ public class MenuWindow extends BasicWindow implements View{
 						{
 							MessageBox wrong = new MessageBox(generateShell , SWT.ICON_ERROR | SWT.YES);
 							wrong.setMessage("Wrong parameters!!!");
-							 wrong.open();
+							wrong.open();
 						}
 					}
 					
@@ -166,10 +154,7 @@ public class MenuWindow extends BasicWindow implements View{
 				generateShell.addListener(SWT.Close, new Listener() {
 				    	@Override
 				      public void handleEvent(Event event) {
-				    		MessageBox messageBox = new MessageBox(generateShell,SWT.ICON_QUESTION| SWT.YES | SWT.NO);
-				    		messageBox.setMessage("Do you really want to exit?");
-				    		if(event.doit = messageBox.open () == SWT.YES)
-				    			shell.setEnabled(true);
+				    		shell.setEnabled(true);
 				      }
 				 });
 				generateShell.open();
@@ -178,6 +163,67 @@ public class MenuWindow extends BasicWindow implements View{
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
+		
+		displayMazeButton.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				shell.setEnabled(false);
+				Shell chooseShell = new Shell();
+				chooseShell.setSize(350, 250);
+				chooseShell.setLayout(new GridLayout(1,true));
+				chooseShell.setText("Choose maze3d");
+				new Label(chooseShell, SWT.None).setText("Choose maze3d to be displayed:");
+				
+				setCommand("mazeName".split(" "));
+				String[] mazes = getMazes();
+				
+				
+				List list = new List(chooseShell, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL);    
+				list.setItems(mazes);    
+				list.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+				
+				Button displayMazeButton = new Button(chooseShell, SWT.PUSH);
+				displayMazeButton.setText("Dispaly maze");
+				displayMazeButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1));
+				
+				displayMazeButton.addSelectionListener(new SelectionListener() {
+					
+					@Override
+					public void widgetSelected(SelectionEvent arg0) {
+						shell.setEnabled(true);
+						
+					}
+					
+					@Override
+					public void widgetDefaultSelected(SelectionEvent arg0) {}
+				});
+				
+				chooseShell.open();
+				
+				//exit
+				chooseShell.addListener(SWT.Close, new Listener() {
+			       	  @Override
+				      public void handleEvent(Event event) {
+				    		shell.setEnabled(true);
+				      }
+				 });
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+		
+		//exit
+		shell.addListener(SWT.Close, new Listener() {
+	       	  @Override
+		      public void handleEvent(Event event) {
+		    		MessageBox messageBox = new MessageBox(shell,SWT.ICON_QUESTION| SWT.YES | SWT.NO);
+		    		messageBox.setMessage("Do you really want to exit?");
+		    		setCommand("exit".split(" "));
+		    		event.doit = messageBox.open () == SWT.YES;
+		      }
+		 });
 		
 	}
 	
@@ -192,16 +238,13 @@ public class MenuWindow extends BasicWindow implements View{
 		pr.setUserInterface("GUI");
 		pr.setMazeName("mainMaze");
 		MyModel m = new MyModel(pr);
-		MenuWindow v=new MenuWindow("Menu", 500, 300);
+		MenuWindow v=new MenuWindow("Menu", 700, 500);
 		MyPresenter p = new MyPresenter(m,v);
 		
 		m.addObserver(p);
 		v.addObserver(p);
 		
 		v.start();
-		/*Integer i = new Integer("155");
-		System.out.println(i);*/
-	
 	}
 
 	@Override
@@ -216,7 +259,6 @@ public class MenuWindow extends BasicWindow implements View{
 
 	@Override
 	public void printMaze3d(int[][][] arr, String name) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -255,6 +297,14 @@ public class MenuWindow extends BasicWindow implements View{
 				return false;
 		}
 		return true;
+	}
+
+	public String[] getMazes() {
+		return mazes;
+	}
+
+	public void setMazes(String[] mazes) {
+		this.mazes = mazes;
 	}
 
 }

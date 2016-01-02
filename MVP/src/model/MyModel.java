@@ -419,6 +419,32 @@ public class MyModel extends Observable implements Model
 	public Properties getProperties() {
 		return properties;
 	}
+	
+	public String[] getNamesMaze3d()
+	{
+		HashMap<String, Maze3d> temp = this.maze3dMap;
+		String s=temp.toString();
+		String[] t = s.split(", ");
+		String[] k=null;
+		for (int i = 0; i < t.length; i++) {
+			if(i==0)
+			{
+				k = t[0].split("=");
+				s = "";
+				for (int j = 1; j < k[0].length(); j++) {
+					s+=k[0].charAt(j);
+				}
+				t[0] = s;
+			}
+			else
+			{
+				
+				k = t[i].split("=");
+				t[i] = k[0];
+			}
+		}
+		return t;
+	}
 }
 
 

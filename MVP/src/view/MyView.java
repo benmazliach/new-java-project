@@ -82,6 +82,19 @@ public class MyView extends CommonView{
 		this.args = args;
 	}
 
+	@Override
+	public String[] getMazes() {
+		return this.mazes;
+	}
+
+	@Override
+	public void setMazes(String[] mazes) {
+		this.mazes = mazes;
+		for (String string : mazes) {
+			System.out.println(string);
+		}
+	}
+
 }
 
 

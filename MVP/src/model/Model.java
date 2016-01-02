@@ -29,4 +29,5 @@ public interface Model {
 	public void loadMaze3dMapZip();
 	void generateMaze3d();
 	void solveMaze();
+	public String[] getNamesMaze3d();
 }

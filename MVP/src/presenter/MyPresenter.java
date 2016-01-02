@@ -50,7 +50,10 @@ public class MyPresenter implements Presenter,Observer{
 			}
 			else
 			{
-				view.printString("Error");
+				if(s.equals("mazeName"))
+					view.setMazes(model.getNamesMaze3d());
+				else
+					view.printString("Error");
 			}
 		}
 		if(o==model)

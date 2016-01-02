@@ -12,4 +12,6 @@ public interface View {
 	public void setArgs(String[] args);
 	public String[] getArgs();
 	void crossSectionPrint(int[][] arr, String sectionType, String name, String section);
+	public String[] getMazes();
+	public void setMazes(String[] mazes);
 }
