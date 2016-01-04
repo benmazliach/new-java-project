@@ -50,10 +50,7 @@ public class MyPresenter implements Presenter,Observer{
 			}
 			else
 			{
-				if(s.equals("mazeName"))
-					view.setMazes(model.getNamesMaze3d());
-				else
-					view.printString("Error");
+				view.displayString("Error");
 			}
 		}
 		if(o==model)
@@ -63,10 +60,10 @@ public class MyPresenter implements Presenter,Observer{
 				String str = (String) arg;
 				int index = model.getIndex();
 				switch (index) {
-				case 0: view.printString(str);
+				case 0: view.displayString(str);
 						break;
 				case 1: String[] args = str.split(" ");
-						view.crossSectionPrint(model.getCross(), args[0], args[1], args[2]);
+						view.displayCrossSection(model.getCross(), args[0], args[1], args[2]);
 						break;
 				}
 			}
@@ -75,6 +72,17 @@ public class MyPresenter implements Presenter,Observer{
 	
 	public void putCommandsMap()
 	{
+		//display all the existing mazes
+		commandsMap.put("mazeName", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				if(args[0].equals("mazeName"))
+					view.setMazes(model.getNamesMaze3d());
+				else
+					view.displayString("error");
+			}
+		});
 		//dir <path>
 		commandsMap.put("dir", new Command() {
 			
@@ -83,7 +91,7 @@ public class MyPresenter implements Presenter,Observer{
 				File file = new File(args[1]);
 				if(file.exists()==true)
 				{
-					view.printString("The path is : ");
+					view.displayString("The path is : ");
 					try {
 						String[] strings = file.list();
 						String str = null;
@@ -93,14 +101,14 @@ public class MyPresenter implements Presenter,Observer{
 							else
 								str += strings[i] + "\n";
 						}
-						view.printString(str);
+						view.displayString(str);
 					}
 					catch (NullPointerException e){
-						view.printString(e.getMessage());
+						view.displayString(e.getMessage());
 					}
 				}
 				else
-					view.printString("Path is not exist");
+					view.displayString("Path is not exist");
 			}
 		});
 		
@@ -122,7 +130,7 @@ public class MyPresenter implements Presenter,Observer{
 					model.generateMaze3d();
 				}
 				else
-					view.printString("Error");
+					view.displayString("Error");
 			}
 		});
 		
@@ -142,10 +150,10 @@ public class MyPresenter implements Presenter,Observer{
 							model.crossBySection(model.getMaze3d(args[7]),args[7],section,args[4].toLowerCase().charAt(0));
 						}
 						else
-							view.printString("Maze " + args[7] + " is not exist!");
+							view.displayString("Maze " + args[7] + " is not exist!");
 					}
 					else
-						view.printString("Error");
+						view.displayString("Error");
 				}//display solution <name>
 				else if(args.length==3)
 				{
@@ -156,17 +164,17 @@ public class MyPresenter implements Presenter,Observer{
 							view.displaySolution(model.getSolution(args[2]),args[2]);
 						}
 						else
-							view.printString("Solution for maze " + args[2] + " is not exist!");
+							view.displayString("Solution for maze " + args[2] + " is not exist!");
 					}
 					else
-						view.printString("Error");
+						view.displayString("Error");
 				}//display <name>
 				else if(model.checkMazeHash(args[1]) == true)
 				{
-					view.printMaze3d(model.getArrayMaze3d(args[1]), args[1]);
+					view.displayMaze3d(model.getMaze3d(args[1]), args[1]);
 				}
 				else
-					view.printString("Maze " + args[1] + " is not exist!");
+					view.displayString("Maze " + args[1] + " is not exist!");
 			}
 		});
 		
@@ -178,7 +186,7 @@ public class MyPresenter implements Presenter,Observer{
 				if(model.checkMazeHash(args[2]) == true)
 					model.saveMaze(model.getMaze3d(args[2]),args[2],args[3]);
 				else
-					view.printString("Maze " + args[2] + " is not exist!");			
+					view.displayString("Maze " + args[2] + " is not exist!");			
 			}
 		});
 		
@@ -198,7 +206,7 @@ public class MyPresenter implements Presenter,Observer{
 				if(model.checkMazeHash(args[2]) == true)
 					model.mazeSize(model.getMaze3d(args[2]),args[2]);
 				else
-					view.printString("Maze " + args[2] + " is not exist!");	
+					view.displayString("Maze " + args[2] + " is not exist!");	
 			}
 		});
 		//file size <file name>
@@ -217,7 +225,7 @@ public class MyPresenter implements Presenter,Observer{
 				if(model.checkMazeHash(args[1])==true)
 					model.solveMaze(args,model.getMaze3d(args[1]));
 				else
-					view.printString("Maze " + args[2] + " is not exist!");	
+					view.displayString("Maze " + args[2] + " is not exist!");	
 			}
 		});
 		//exit
@@ -240,11 +248,6 @@ public class MyPresenter implements Presenter,Observer{
 		this.view = view;
 	}
 
-	
-	@Override
-	public void printStr(String str) {
-		view.printString(str);
-	}
 }
 
 

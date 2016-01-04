@@ -3,6 +3,8 @@ package view;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 
+import algorithms.mazeGenerators.Position;
+
 
 // this is (1) the common type, and (2) a type of widget
 // (1) we can switch among different MazeDisplayers
@@ -21,7 +23,6 @@ public abstract class MazeDisplayer extends Canvas{
 		this.mazeData=mazeData;
 	}
 	
-	public abstract  void setCharacterPosition(int row,int col);
 
 	public abstract void moveUp();
 
@@ -31,6 +32,20 @@ public abstract class MazeDisplayer extends Canvas{
 
 	public  abstract void moveRight();
 	
-	public abstract void displayMaze();
+	public abstract Position getStartPosition() ;
+	
+	public abstract void setStartPosition(Position startPosition);
+
+	public abstract Position getGoalPosition();
+	
+	public abstract void setGoalPosition(Position goalPosition);
+
+	public abstract void setCharacterPosition(int row, int col);
+	
+	public abstract void setSection(String section);
+	
+	public abstract Position getCharacter();
+	
+	public abstract void setCharacter(Position character);
 
 }

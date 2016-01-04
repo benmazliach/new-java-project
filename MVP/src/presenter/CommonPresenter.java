@@ -8,7 +8,7 @@ import algorithms.search.State;
 import model.Model;
 import view.View;
 
-public abstract class CommonController implements Presenter{
+public abstract class CommonPresenter implements Presenter{
 	
 	/**
 	 * Set model
@@ -34,7 +34,7 @@ public abstract class CommonController implements Presenter{
 	 * Transfer to view string that he sould to present
 	 * @param String str
 	 */
-	public abstract void printStr(String str);
+	public abstract void displayStr(String str);
 	/**
 	 * Load maze from hashmap
 	 * @param Maze3d maze, String mazename

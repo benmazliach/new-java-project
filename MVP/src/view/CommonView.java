@@ -1,5 +1,7 @@
 package view;
 import java.util.Observable;
+
+import algorithms.mazeGenerators.Maze3d;
 /**
  * <h1>  MyView class <h1>
  * This class define methods for each view system
@@ -18,15 +20,15 @@ public abstract class CommonView extends Observable implements View {
 	 */
 	public abstract void start();
 	/**
-	 * print any string 
+	 * display any string 
 	 * @param String s
 	 */
-	public abstract void printString(String s);
+	public abstract void displayString(String s);
 	/**
-	 * print maze3d
+	 * display maze3d
 	 * @param int[][][],String - the maze,maze name
 	 */
-	public abstract void printMaze3d(int[][][] arr, String name);
+	public abstract void displayMaze3d(Maze3d maze, String name);
 	/**
 	 * print cross by sectionType
 	 * @param int[][],char,String,int - the cross maze,section type,maze name,section index

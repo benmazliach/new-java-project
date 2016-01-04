@@ -2,6 +2,7 @@ package view;
 
 import java.util.ArrayList;
 
+import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 import algorithms.search.State;
@@ -21,13 +22,14 @@ public class MyView extends CommonView{
 	}
 
 	@Override
-	public void printString(String s) {
+	public void displayString(String s) {
 		cli.getOut().println(s);
 		cli.getOut().flush();
 	}
 
 	@Override
-	public void printMaze3d(int[][][] arr,String name) {
+	public void displayMaze3d(Maze3d maze,String name) {
+		int[][][] arr = maze.getMaze();
 		cli.getOut().println("Maze name: "+name);
 		for(int i=0;i<arr.length;i++)
 		{
@@ -45,7 +47,7 @@ public class MyView extends CommonView{
 	}
 
 	@Override
-	public void crossSectionPrint(int[][] arr, String sectionType, String name,String section) {
+	public void displayCrossSection(int[][] arr, String sectionType, String name,String section) {
 		cli.getOut().println("Maze name: "+name);
 		cli.getOut().println("Section by "+sectionType+" = "+section);
 		for(int i=0;i<arr.length;i++)
@@ -64,14 +66,14 @@ public class MyView extends CommonView{
 		if(sol!=null)
 		{
 			ArrayList<State<Position>> print = sol.getSol();
-			printString("Solution of maze "+name+" is:");
+			displayString("Solution of maze "+name+" is:");
 			for (State<Position> state : print) {
 				cli.getOut().println(state.toString());
 			}
 			cli.getOut().flush();
 		}
 		else
-			this.printString("Solution is not exist");
+			this.displayString("Solution is not exist");
 	}
 	
 	public String[] getArgs() {

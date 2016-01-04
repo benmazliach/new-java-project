@@ -54,6 +54,8 @@ public class MyModel extends Observable implements Model
 		cross = null;
 		loadMaze3dMapZip();
 		this.threadpool = Executors.newFixedThreadPool(properties.getNumOfThreads());  
+		generateMaze3d();
+		solveMaze();
 	}
 	
 	@Override
@@ -85,9 +87,9 @@ public class MyModel extends Observable implements Model
 			public Maze3d call() {
 				Maze3dGenerator mg = null;
 				if(properties.getAlgorithmGenerateName().equals("MyMaze3dGenerator")==true)
-					mg = new MyMaze3dGenerator(properties.getxSize(),properties.getySize(),properties.getzSize());
+					mg = new MyMaze3dGenerator(properties.getXSize(),properties.getYSize(),properties.getZSize());
 				else
-					mg = new SimpleMaze3dGenerator(properties.getxSize(),properties.getySize(),properties.getzSize());
+					mg = new SimpleMaze3dGenerator(properties.getXSize(),properties.getYSize(),properties.getZSize());
 				setMaze3d(mg.getMaze(),properties.getMazeName());
 				return mg.getMaze();
 			}
@@ -125,25 +127,40 @@ public class MyModel extends Observable implements Model
 	public void crossBySection(Maze3d maze, String name, int section, char typeSection) {
 		String s = null;
 		if(typeSection=='x'){
-			setCross(maze.getCrossSectionByX(section));
-			s = typeSection + " " + name + " " +section;
-			index = 1;
-			this.setChanged();
-			notifyObservers(s);
+			if(section<maze.getXSize() && section>=0)
+			{
+				setCross(maze.getCrossSectionByX(section));
+				s = typeSection + " " + name + " " +section;
+				index = 1;
+				this.setChanged();
+				notifyObservers(s);
+			}
+			else
+				notifyString("error");
 		}
 		else if(typeSection=='y'){
-			cross = maze.getCrossSectionByY(section);
-			s = typeSection + " " + name + " " +section;
-			index = 1;
-			this.setChanged();
-			notifyObservers(s);
+			if(section<maze.getYSize() && section>=0)
+			{
+				cross = maze.getCrossSectionByY(section);
+				s = typeSection + " " + name + " " +section;
+				index = 1;
+				this.setChanged();
+				notifyObservers(s);
+			}
+			else
+				notifyString("error");
 		}
 		else if(typeSection=='z'){
-			setCross(maze.getCrossSectionByZ(section));
-			s = typeSection + " " + name + " " +section;
-			index = 1;
-			this.setChanged();
-			notifyObservers(s);
+			if(section<maze.getZSize() && section>=0)
+			{
+				setCross(maze.getCrossSectionByZ(section));
+				s = typeSection + " " + name + " " +section;
+				index = 1;
+				this.setChanged();
+				notifyObservers(s);
+			}
+			else
+				notifyString("error");
 		}
 	}
 	@Override

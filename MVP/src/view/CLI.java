@@ -35,7 +35,7 @@ public class CLI implements Runnable{
 						view.setCommand(args);
 					}
 				} catch (IOException e) {
-					view.printString(e.getMessage());
+					view.displayString(e.getMessage());
 				}
 				view.setCommand(args = s.split(" "));
 			}

@@ -1,46 +1,68 @@
 package boot;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import model.MyModel;
 import presenter.MyPresenter;
+import presenter.Properties;
 import view.CLI;
 import view.MyView;
 
 public class Run {
 		
 	public static void main(String[] args) { 
-		presenter.Properties pr = new presenter.Properties();
+		Properties pr = new Properties();
 		pr.setAlgorithmGenerateName("MyMaze3dGenerator");
 		pr.setAlgorithmSearchName("BFS");
 		pr.setNumOfThreads(10);
-		pr.setxSize(5);
-		pr.setySize(5);
-		pr.setzSize(5);
+		pr.setXSize(12);
+		pr.setYSize(5);
+		pr.setZSize(12);
 		pr.setUserInterface("CLI");
 		pr.setMazeName("mainMaze");
 		
-		/*try {
-			FileOutputStream file = new FileOutputStream("Properties.xml");
-			ObjectOutputStream obj = new ObjectOutputStream(file);
-			XMLEncoder s = new XMLEncoder(obj);
-			s.writeObject(p);
+		try {
+			FileOutputStream file = new FileOutputStream("properties.xml");
+			BufferedOutputStream bos = new BufferedOutputStream(file);
+			XMLEncoder s = new XMLEncoder(bos);
+			s.writeObject(pr);
 			s.flush();
 			s.close();
+			file.close();
+			bos.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}*/
+		}
+		//Properties pr = new Properties();
+		try {
+			FileInputStream file = new FileInputStream("properties.xml");
+			BufferedInputStream bis = new BufferedInputStream(file);
+			XMLDecoder s = new XMLDecoder(bis);
+			pr = (Properties) s.readObject();
+			s.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 		
 		BufferedReader in = null;
 		in = new BufferedReader(new InputStreamReader(System.in));
 		PrintWriter out = null;
 		out = new PrintWriter(new OutputStreamWriter(System.out));
-		
+	
 		
 		MyModel m = new MyModel(pr);
 		CLI cli = new CLI(in,out);
@@ -50,7 +72,7 @@ public class Run {
 		
 		// out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ben.txt")));
 			//	out.write("generate 3d maze ben 5 5 5 MyMaze3dGenerator\n");
-				//out.write("dir src\n");
+			//	out.write("dir src\n");
 			//	out.write("display ben\n");
 			//	out.write("display cross section by Y 2 for ben\n");
 			//	out.write("save maze ben fileMaze\n");
@@ -124,6 +146,3 @@ public class Run {
 		
 	}
 }
-
-
-

@@ -9,6 +9,4 @@ public interface Presenter {
 	
 	void setView(View view);
 	
-	void printStr(String str);
-	
 }
