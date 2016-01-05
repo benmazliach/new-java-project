@@ -1,9 +1,14 @@
 package view;
 
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -20,6 +25,7 @@ import org.eclipse.swt.widgets.Text;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
+import algorithms.search.State;
 import model.MyModel;
 import presenter.MyPresenter;
 
@@ -29,6 +35,8 @@ public class MainWindow extends BasicWindow implements View{
 	private String[] mazes;
 	private String nameCurrentMaze;
 	private MazeDisplayer mazeDisplayer;
+	private Maze3d maze;
+	private Group arrowsGroup;
 	
 	public MainWindow(String title, int x, int y) {
 		super(title, x, y);
@@ -84,6 +92,27 @@ public class MainWindow extends BasicWindow implements View{
 		sectionZButton.setText("Section by Z");
 		sectionZButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
 		
+		//arrows group
+		arrowsGroup = new Group(shell, SWT.NONE);
+		arrowsGroup.setText("Posible moves:");
+		arrowsGroup.setLayout(new GridLayout(3, false));
+		
+		Button[] b = new Button[6];
+		
+		b[0] = new Button(arrowsGroup, SWT.NONE);
+		b[0].setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false, 2, 1));
+		b[1] = new Button(arrowsGroup, SWT.NONE);
+		b[1].setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
+		b[2] = new Button(arrowsGroup, SWT.NONE);
+		b[2].setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+		b[3] = new Button(arrowsGroup, SWT.NONE);
+		b[3].setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+		b[4] = new Button(arrowsGroup, SWT.NONE);
+		b[4].setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false, 2, 1));
+		b[5] = new Button(arrowsGroup, SWT.NONE);
+		b[5].setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
+		
+		possibleMoves(b);
 		
 		sectionXButton.addSelectionListener(new SelectionListener() {
 			
@@ -93,6 +122,7 @@ public class MainWindow extends BasicWindow implements View{
 				{
 					mazeDisplayer.setSection("x");
 					setCommand(("display cross section by X "+mazeDisplayer.getCharacter().getpX()+" for "+nameCurrentMaze).split(" "));
+					possibleMoves(b);
 				}
 			}
 			
@@ -108,6 +138,7 @@ public class MainWindow extends BasicWindow implements View{
 				{
 					mazeDisplayer.setSection("y");
 					setCommand(("display cross section by Y "+mazeDisplayer.getCharacter().getpY()+" for "+nameCurrentMaze).split(" "));
+					possibleMoves(b);
 					}
 				}
 			
@@ -123,6 +154,7 @@ public class MainWindow extends BasicWindow implements View{
 				{
 					mazeDisplayer.setSection("z");
 					setCommand(("display cross section by Z "+mazeDisplayer.getCharacter().getpZ()+" for "+nameCurrentMaze).split(" "));
+					possibleMoves(b);
 				}
 			}
 	
@@ -130,11 +162,6 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 		
-		
-		//arrows group
-		Group arrowsGroup = new Group(shell, SWT.NONE);
-		arrowsGroup.setText("Posible moves:");
-		arrowsGroup.setLayout(new GridLayout(3, false));
 		
 		generateButton.addSelectionListener(new SelectionListener() {
 			
@@ -252,8 +279,10 @@ public class MainWindow extends BasicWindow implements View{
 					public void widgetSelected(SelectionEvent arg0) {
 						shell.setEnabled(true);
 						mazeDisplayer.setSection("y");
+						mazeDisplayer.setSol(null);
 						nameCurrentMaze = mazes[list.getFocusIndex()];
 						setCommand(("display "+nameCurrentMaze).split(" "));
+						possibleMoves(b);
 						chooseShell.close();
 					}
 					
@@ -274,6 +303,48 @@ public class MainWindow extends BasicWindow implements View{
 			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+		
+		solveButton.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				maze.setStartPosition(mazeDisplayer.getCharacter());
+				setCommand(("solve "+nameCurrentMaze+" "+"BFS").split(" "));
+				maze.setStartPosition(mazeDisplayer.getStartPosition());
+				setCommand(("display solution "+nameCurrentMaze).split(" "));
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+		
+		mazeDisplayer.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				switch(arg0.keyCode)
+				{
+				case SWT.ARROW_UP: mazeDisplayer.moveUp();
+						break;
+				case SWT.ARROW_DOWN: mazeDisplayer.moveDown();
+						break;
+				case SWT.ARROW_LEFT: mazeDisplayer.moveLeft();
+						break;
+				case SWT.ARROW_RIGHT: mazeDisplayer.moveRight();
+						break;
+				case SWT.PAGE_UP: movePageUp();
+					break;
+				case SWT.PAGE_DOWN: movePageDown();
+					break;
+				}
+				possibleMoves(b);
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				
+			}
 		});
 		
 		//exit
@@ -312,15 +383,106 @@ public class MainWindow extends BasicWindow implements View{
 		
 		v.start();
 	}
-
-	@Override
-	public void displayString(String s) {
-		// TODO Auto-generated method stub
-		
+	
+	public void movePageUp()
+	{
+		if(mazeDisplayer.getSection().equals("y")==true)
+		{
+			int pY = mazeDisplayer.getCharacter().getpY()+1;
+			if(maze.getYSize()>pY)
+			{
+				if(maze.returnValue(mazeDisplayer.getCharacter().getpX(), pY, mazeDisplayer.getCharacter().getpZ())==0)
+				{
+					mazeDisplayer.getCharacter().setpY(pY);
+					setCommand(("display cross section by Y "+pY+" for "+nameCurrentMaze).split(" "));
+				}
+			}
+		}
+		else if(mazeDisplayer.getSection().equals("x")==true)
+		{
+			int pX = mazeDisplayer.getCharacter().getpX()+1;
+			if(maze.getYSize()>pX)
+			{
+				if(maze.returnValue(pX, mazeDisplayer.getCharacter().getpY(), mazeDisplayer.getCharacter().getpZ())==0)
+				{
+					mazeDisplayer.getCharacter().setpX(pX);
+					setCommand(("display cross section by X "+pX+" for "+nameCurrentMaze).split(" "));
+				}
+			}
+		}
+		else if(mazeDisplayer.getSection().equals("z")==true)
+		{
+			int pZ = mazeDisplayer.getCharacter().getpZ()+1;
+			if(maze.getYSize()>pZ)
+			{
+				if(maze.returnValue(mazeDisplayer.getCharacter().getpX(), mazeDisplayer.getCharacter().getpY(), pZ)==0)
+				{
+					mazeDisplayer.getCharacter().setpZ(pZ);
+					setCommand(("display cross section by Z "+pZ+" for "+nameCurrentMaze).split(" "));
+				}
+			}
+		}
+	}
+	
+	public void movePageDown()
+	{
+		if(mazeDisplayer.getSection().equals("y")==true)
+		{
+			int pY = mazeDisplayer.getCharacter().getpY()-1;
+			if(pY>=0)
+			{
+				if(maze.returnValue(mazeDisplayer.getCharacter().getpX(), pY, mazeDisplayer.getCharacter().getpZ())==0)
+				{
+					mazeDisplayer.getCharacter().setpY(pY);
+					setCommand(("display cross section by Y "+pY+" for "+nameCurrentMaze).split(" "));
+				}
+			}
+		}
+		else if(mazeDisplayer.getSection().equals("x")==true)
+		{
+			int pX = mazeDisplayer.getCharacter().getpX()-1;
+			if(pX>=0)
+			{
+				if(maze.returnValue(pX, mazeDisplayer.getCharacter().getpY(), mazeDisplayer.getCharacter().getpZ())==0)
+				{
+					mazeDisplayer.getCharacter().setpX(pX);
+					setCommand(("display cross section by X "+pX+" for "+nameCurrentMaze).split(" "));
+				}
+			}
+		}
+		else if(mazeDisplayer.getSection().equals("z")==true)
+		{
+			int pZ = mazeDisplayer.getCharacter().getpZ()-1;
+			if(pZ>=0)
+			{
+				if(maze.returnValue(mazeDisplayer.getCharacter().getpX(), mazeDisplayer.getCharacter().getpY(), pZ)==0)
+				{
+					mazeDisplayer.getCharacter().setpZ(pZ);
+					setCommand(("display cross section by Z "+pZ+" for "+nameCurrentMaze).split(" "));
+				}
+			}
+		}
 	}
 
 	@Override
+	public void displayString(String s) {
+		System.out.println(s);
+	}
+
+	public Maze3d getMaze() {
+		return maze;
+	}
+
+
+	public void setMaze(Maze3d maze) {
+		this.maze = maze;
+	}
+
+
+	@Override
 	public void displayMaze3d(Maze3d maze, String name) {
+		this.setMaze(maze);
+		System.out.println(maze.getStartPosition());
 		mazeDisplayer.setCharacter(maze.getStartPosition());
 		mazeDisplayer.setStartPosition(maze.getStartPosition());
 		mazeDisplayer.setGoalPosition(maze.getGoalPosition());
@@ -330,8 +492,13 @@ public class MainWindow extends BasicWindow implements View{
 
 	@Override
 	public void displaySolution(Solution<Position> sol, String name) {
-		// TODO Auto-generated method stub
-		
+		ArrayList<State<Position>> temp = new ArrayList<State<Position>>();
+		for(int i=sol.getSol().size()-1;i>=0;i--)
+		{
+			temp.add(sol.getSol().get(i));
+		}
+		mazeDisplayer.setSol(new Solution<>(temp));
+		mazeDisplayer.redraw();
 	}
 
 	@Override
@@ -367,32 +534,113 @@ public class MainWindow extends BasicWindow implements View{
 		this.mazes = mazes;
 	}
 	
-	public void posibleMoves()
+	public void possibleMoves(Button[] b)
 	{
-		/*Button backward = new Button(arrowsGroup, SWT.NONE);
-		Image image = new Image(display, "resources/backward1.png");
-		backward.setImage(image);
-		backward.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false, 2, 1));
-		Button up = new Button(arrowsGroup, SWT.NONE);
+		Image image = null;
+		String[] possibleMoves = null;
+		
+		if(mazeDisplayer.getMazeData()!=null)
+		{
+			possibleMoves = mazeDisplayer.possibleMoves();
+			String str = "";
+			
+			for (String string : possibleMoves) {
+				str+= (string+" ");
+			}
+			
+			//   Down / Up
+			int h = 0;
+			int up = 1;
+			int down = 1;
+			int maxSection = 0;
+			if(mazeDisplayer.getSection().equals("y")==true)
+			{
+				h = mazeDisplayer.getCharacter().getpY();
+				maxSection = maze.getYSize();
+				if(h+1<maxSection)
+					up = maze.returnValue(mazeDisplayer.getCharacter().getpX(), h+1, mazeDisplayer.getCharacter().getpZ());
+				if(h-1>=0)
+					down = maze.returnValue(mazeDisplayer.getCharacter().getpX(), h-1, mazeDisplayer.getCharacter().getpZ());
+			}
+			else if(mazeDisplayer.getSection().equals("x")==true)
+			{
+				h = mazeDisplayer.getCharacter().getpX();
+				maxSection = maze.getXSize();
+				if(h+1<maxSection)
+					up = maze.returnValue(h+1,mazeDisplayer.getCharacter().getpY(),  mazeDisplayer.getCharacter().getpZ());
+				if(h-1>=0)
+					down = maze.returnValue(h-1, mazeDisplayer.getCharacter().getpY(), mazeDisplayer.getCharacter().getpZ());
+			}
+			else if(mazeDisplayer.getSection().equals("z")==true)
+			{
+				h = mazeDisplayer.getCharacter().getpZ();
+				maxSection = maze.getZSize();
+				if(h+1<maxSection)
+					up = maze.returnValue(mazeDisplayer.getCharacter().getpX(), mazeDisplayer.getCharacter().getpY(), h+1);
+				if(h-1>=0)
+					down = maze.returnValue(mazeDisplayer.getCharacter().getpX(), mazeDisplayer.getCharacter().getpY(), h-1);
+			}
+			else
+				return;
+			
+			if(up==0)
+				str+="Up ";
+			if(down==0)
+				str+="Down ";
+			
+			possibleMoves = str.split(" ");
+		}
+		
+		image = new Image(display, "resources/backward1.png");
+		b[0].setImage(image);
 		image= new Image(display, "resources/UP1.png");
-		up.setImage(image);
-		up.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
-		Button left = new Button(arrowsGroup, SWT.NONE);
+		b[1].setImage(image);
 		image= new Image(display, "resources/left1.png");
-		left.setImage(image);
-		left.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-		Button right = new Button(arrowsGroup, SWT.NONE);
+		b[2].setImage(image);
 		image= new Image(display, "resources/right1.png");
-		right.setImage(image);
-		right.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-		Button forward = new Button(arrowsGroup, SWT.NONE);
+		b[3].setImage(image);
 		image = new Image(display, "resources/forward1.png");
-		forward.setImage(image);
-		forward.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false, 2, 1));
-		Button down = new Button(arrowsGroup, SWT.NONE);
+		b[4].setImage(image);
 		image= new Image(display, "resources/DOWN1.png");
-		down.setImage(image);
-		down.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));*/
+		b[5].setImage(image);
+		
+		if(possibleMoves!=null)
+		{
+			for(int i=0;i<possibleMoves.length;i++)
+			{
+				if(possibleMoves[i].equals("Backward")==true)
+				{
+					image = new Image(display, "resources/backward2.png");
+					b[0].setImage(image);
+				}
+				else if(possibleMoves[i].equals("Up")==true)
+				{
+					image= new Image(display, "resources/UP2.png");
+					b[1].setImage(image);
+				}
+				else if(possibleMoves[i].equals("Left")==true)
+				{
+					image= new Image(display, "resources/left2.png");
+					b[2].setImage(image);
+				}
+				else if(possibleMoves[i].equals("Right")==true)
+				{
+					image= new Image(display, "resources/right2.png");
+					b[3].setImage(image);
+				}
+				else if(possibleMoves[i].equals("Forward")==true)
+				{
+					image = new Image(display, "resources/forward2.png");
+					b[4].setImage(image);
+				}
+				else if(possibleMoves[i].equals("Down")==true)
+				{
+					image= new Image(display, "resources/DOWN2.png");
+					b[5].setImage(image);
+				}
+			}
+		}
+		
 	}
 	
 	public boolean isInt(String str) {

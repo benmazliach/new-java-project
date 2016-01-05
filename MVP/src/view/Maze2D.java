@@ -1,5 +1,7 @@
 package view;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -7,16 +9,19 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
 import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
+import algorithms.search.State;
 
 public class Maze2D extends MazeDisplayer{
 
 	/*public int characterW;
 	public int characterH;*/
 	
-	public String section;
-	public Position startPosition;
-	public Position goalPosition;
-	public Position character;
+	private String section;
+	private Position startPosition;
+	private Position goalPosition;
+	private Position character;
+	private Solution<Position> sol;
 	
 
 	public Maze2D(Composite parent, int style) {
@@ -36,6 +41,7 @@ public class Maze2D extends MazeDisplayer{
 					setBackground(white);
 					return;
 				}
+				Image m = null;
 				
 				e.gc.setForeground(new Color(null,0,0,0));
 				e.gc.setBackground(new Color(null,0,0,0));
@@ -57,49 +63,73 @@ public class Maze2D extends MazeDisplayer{
 				        {
 				        	if(section.equals("x")==true)
 				        	{
+				        		if(sol!=null)
+				        		{
+				        			if(sol.getSol().contains(new State<Position>(new Position(character.getpX(), i, j))) == true)
+					        		{
+				        				m = new Image(getDisplay(), "resources/coin.jpg");
+						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+					        		}
+				        		}
 				        		if(character.getpX()==goalPosition.getpX())
 				        		{
 				        			if(j==goalPosition.getpZ()&&i==goalPosition.getpY())
 						        	{
-				        				Image m = new Image(getDisplay(), "resources/goalPos.jpg");
+				        				m = new Image(getDisplay(), "resources/goalPos.jpg");
 						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 						        	}
 				        		}
 				        		if(j==character.getpZ()&&i==character.getpY())
 					        	{
-					        		Image m = new Image(getDisplay(), "resources/pacman.png");
+					        		m = new Image(getDisplay(), "resources/pacman.png");
 					        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 					        	}
 				        	}
 				        	else if(section.equals("y")==true)
 				        	{
+				        		if(sol!=null)
+				        		{
+				        			if(sol.getSol().contains(new State<Position>(new Position(j, character.getpY(), i))) == true)
+					        		{
+				        				m = new Image(getDisplay(), "resources/coin.jpg");
+						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+					        		}
+				        		}
 				        		if(character.getpY()==goalPosition.getpY())
 				        		{
 				        			if(j==goalPosition.getpX()&&i==goalPosition.getpZ())
 						        	{
-				        				Image m = new Image(getDisplay(), "resources/goalPos.jpg");
+				        				m = new Image(getDisplay(), "resources/goalPos.jpg");
 						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 						        	}
 				        		}
 				        		if(j==character.getpX()&&i==character.getpZ())
 					        	{
-					        		Image m = new Image(getDisplay(), "resources/pacman.png");
+					        		m = new Image(getDisplay(), "resources/pacman.png");
 					        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 					        	}
 				        	}
 				        	else if(section.equals("z")==true)
 				        	{
+				        		if(sol!=null)
+				        		{
+				        			if(sol.getSol().contains(new State<Position>(new Position(j, i, character.getpZ()))) == true)
+					        		{
+				        				m = new Image(getDisplay(), "resources/coin.jpg");
+						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+					        		}
+				        		}
 				        		if(character.getpZ()==goalPosition.getpZ())
 				        		{
 				        			if(j==goalPosition.getpX()&&i==goalPosition.getpY())
 						        	{
-				        				Image m = new Image(getDisplay(), "resources/goalPos.jpg");
+				        				m = new Image(getDisplay(), "resources/goalPos.jpg");
 						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 						        	}
 				        		}
 				        		if(j==character.getpX()&&i==character.getpY())
 					        	{
-					        		Image m = new Image(getDisplay(), "resources/pacman.png");
+					        		m = new Image(getDisplay(), "resources/pacman.png");
 					        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 					        	}
 				        	}
@@ -108,6 +138,43 @@ public class Maze2D extends MazeDisplayer{
 				}
 			}
 		});
+	}
+	
+	@Override
+	public String[] possibleMoves() {
+		String s = "";
+		int w = 0;
+		int h = 0;
+		
+		if(section.equals("y")==true)
+		{
+			w = character.getpX();
+			h = character.getpZ();
+		}
+		else if(section.equals("x")==true)
+		{
+			w = character.getpZ();
+			h = character.getpY();
+		}
+		else if(section.equals("z")==true)
+		{
+			w = character.getpX();
+			h = character.getpY();
+		}
+		
+		if(mazeData[0].length>(w+1))
+			if(mazeData[h][w+1]==0)
+				s+="Right ";
+		if((w-1)>=0)
+			if(mazeData[h][w-1]==0)
+				s+="Left ";
+		if(mazeData.length>(h+1))
+			if(mazeData[h+1][w]==0)
+				s+="Forward ";
+		if((h-1)>=0)
+			if(mazeData[h-1][w]==0)
+				s+="Backward ";
+		return s.split(" ");
 	}
 	
 	@Override
@@ -206,7 +273,7 @@ public class Maze2D extends MazeDisplayer{
 		}
 		else
 			return;
-		w=w-1;
+		w=w+1;
 		moveCharacter(w, h);
 	}
 
@@ -225,7 +292,7 @@ public class Maze2D extends MazeDisplayer{
 
 	@Override
 	public void setStartPosition(Position startPosition) {
-		this.startPosition = startPosition;
+		this.startPosition = new Position(startPosition.getpX(), startPosition.getpY(), startPosition.getpZ());
 	}
 
 	@Override
@@ -235,7 +302,7 @@ public class Maze2D extends MazeDisplayer{
 
 	@Override
 	public void setGoalPosition(Position goalPosition) {
-		this.goalPosition = goalPosition;
+		this.goalPosition = new Position(goalPosition.getpX(), goalPosition.getpY(), goalPosition.getpZ());
 	}
 
 	@Override
@@ -295,7 +362,15 @@ public class Maze2D extends MazeDisplayer{
 	}
 
 	public void setCharacter(Position character) {
-		this.character = character;
+		this.character = new Position(character.getpX(), character.getpY(), character.getpZ());
 	}
 	
+	public Solution<Position> getSol() {
+		return sol;
+	}
+
+	public void setSol(Solution<Position> sol) {
+		this.sol = sol;
+	}
+
 }

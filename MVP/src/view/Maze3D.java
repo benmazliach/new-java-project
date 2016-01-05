@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
 import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
 
 public class Maze3D extends MazeDisplayer {
 	
@@ -176,6 +177,30 @@ public class Maze3D extends MazeDisplayer {
 
 	@Override
 	public void setSection(String section) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getSection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] possibleMoves() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Solution<Position> getSol() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setSol(Solution<Position> sol) {
 		// TODO Auto-generated method stub
 		
 	}

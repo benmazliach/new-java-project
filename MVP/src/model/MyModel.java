@@ -305,10 +305,10 @@ public class MyModel extends Observable implements Model
 				}
 				else if(properties.getAlgorithmSearchName().equals("Astar Air Distance")==true)
 				{
-						solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeAirDistance(s));
-						sol = new Solution<Position>(solve.search(s).getSol());
-						setMazeSol(sol, maze3dMap.get(properties.getMazeName()));
-						setSolution(sol,properties.getMazeName());
+					solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeAirDistance(s));
+					sol = new Solution<Position>(solve.search(s).getSol());
+					setMazeSol(sol, maze3dMap.get(properties.getMazeName()));
+					setSolution(sol,properties.getMazeName());
 				}
 				else if(properties.getAlgorithmSearchName().equals("Astar Manhattan Distance")==true)
 				{

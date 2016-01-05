@@ -227,7 +227,7 @@ public class MenuWindow extends BasicWindow implements View{
 						break;
 				case SWT.ARROW_RIGHT: mazeDisplayer.moveRight();
 						break;
-				case SWT.PAGE_UP:
+				case SWT.PAGE_UP: 
 					
 					break;
 				case SWT.PAGE_DOWN:
