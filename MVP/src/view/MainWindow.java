@@ -2,6 +2,8 @@ package view;
 
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -31,6 +33,8 @@ import presenter.MyPresenter;
 
 public class MainWindow extends BasicWindow implements View{
 
+	Timer timer;
+	TimerTask task;
 	private String[] args;
 	private String[] mazes;
 	private String nameCurrentMaze;
@@ -46,6 +50,8 @@ public class MainWindow extends BasicWindow implements View{
 	@Override
 	void initWidgets() {
 		shell.setLayout(new GridLayout(2,false));
+		
+		//להוסיף TOOLBAR עם על מה שכתבתי לך ועם כל מה שכתוב במטלה של חלק 4
 		
 		//Buttons group
 		Group buttonsGroup = new Group(shell, SWT.NONE);
@@ -280,6 +286,7 @@ public class MainWindow extends BasicWindow implements View{
 						shell.setEnabled(true);
 						mazeDisplayer.setSection("y");
 						mazeDisplayer.setSol(null);
+						mazeDisplayer.setFinish(false);
 						nameCurrentMaze = mazes[list.getFocusIndex()];
 						setCommand(("display "+nameCurrentMaze).split(" "));
 						possibleMoves(b);
@@ -309,10 +316,35 @@ public class MainWindow extends BasicWindow implements View{
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				if(nameCurrentMaze!=null)
+				{
+					maze.setStartPosition(mazeDisplayer.getCharacter());
+					//change bfs
+					//תבדוק מה אפשר לעשות כדי שנוכל לדעת באיזה אלגוריתם להשתמש ביצירת פתרון
+					//אולי דרך קבלת הפתרון או שהמשתמש יבחר מאופציות שניתן לו כמו ביצירת המבוך
+					setCommand(("solve "+nameCurrentMaze+" "+"BFS").split(" "));
+					maze.setStartPosition(mazeDisplayer.getStartPosition());
+					setCommand(("display solution "+nameCurrentMaze).split(" "));
+				}
+				else
+				{
+					MessageBox message = new MessageBox(shell,SWT.ICON_ERROR| SWT.YES);
+					message.setMessage("You have to choose a maze first!!!");
+					message.open();
+				}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+		
+		hintButton.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
 				maze.setStartPosition(mazeDisplayer.getCharacter());
-				setCommand(("solve "+nameCurrentMaze+" "+"BFS").split(" "));
+				setCommand(("hint "+nameCurrentMaze).split(" "));
 				maze.setStartPosition(mazeDisplayer.getStartPosition());
-				setCommand(("display solution "+nameCurrentMaze).split(" "));
 			}
 			
 			@Override
@@ -323,20 +355,23 @@ public class MainWindow extends BasicWindow implements View{
 			
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				switch(arg0.keyCode)
+				if(mazeDisplayer.isFinish()==false)
 				{
-				case SWT.ARROW_UP: mazeDisplayer.moveUp();
+					switch(arg0.keyCode)
+					{
+					case SWT.ARROW_UP: mazeDisplayer.moveUp();
+							break;
+					case SWT.ARROW_DOWN: mazeDisplayer.moveDown();
+							break;
+					case SWT.ARROW_LEFT: mazeDisplayer.moveLeft();
+							break;
+					case SWT.ARROW_RIGHT: mazeDisplayer.moveRight();
+							break;
+					case SWT.PAGE_UP: movePageUp();
 						break;
-				case SWT.ARROW_DOWN: mazeDisplayer.moveDown();
+					case SWT.PAGE_DOWN: movePageDown();
 						break;
-				case SWT.ARROW_LEFT: mazeDisplayer.moveLeft();
-						break;
-				case SWT.ARROW_RIGHT: mazeDisplayer.moveRight();
-						break;
-				case SWT.PAGE_UP: movePageUp();
-					break;
-				case SWT.PAGE_DOWN: movePageDown();
-					break;
+					}
 				}
 				possibleMoves(b);
 			}
@@ -466,7 +501,17 @@ public class MainWindow extends BasicWindow implements View{
 
 	@Override
 	public void displayString(String s) {
-		System.out.println(s);
+		//System.out.println(isInt(s));
+		//הצגת הודעה עם מספר הצעדים שצריך לעשות עד היעד
+		//זה של הרמז
+		if(isInt(s)==true)
+		{
+			MessageBox messageBox = new MessageBox(shell, SWT.ICON_INFORMATION| SWT.YES);
+			messageBox.setMessage("You need to do "+s+" steps to treasure");
+			messageBox.open();
+		}
+		else
+			System.out.println(s);
 	}
 
 	public Maze3d getMaze() {
@@ -482,7 +527,6 @@ public class MainWindow extends BasicWindow implements View{
 	@Override
 	public void displayMaze3d(Maze3d maze, String name) {
 		this.setMaze(maze);
-		System.out.println(maze.getStartPosition());
 		mazeDisplayer.setCharacter(maze.getStartPosition());
 		mazeDisplayer.setStartPosition(maze.getStartPosition());
 		mazeDisplayer.setGoalPosition(maze.getGoalPosition());
@@ -604,7 +648,7 @@ public class MainWindow extends BasicWindow implements View{
 		image= new Image(display, "resources/DOWN1.png");
 		b[5].setImage(image);
 		
-		if(possibleMoves!=null)
+		if(possibleMoves!=null && mazeDisplayer.isFinish()==false)
 		{
 			for(int i=0;i<possibleMoves.length;i++)
 			{

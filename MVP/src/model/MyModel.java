@@ -10,8 +10,10 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -238,9 +240,11 @@ public class MyModel extends Observable implements Model
 	
 	@Override
 	public void solveMaze(String[] args, Maze3d maze) {
-		if(mazeSolMap.containsKey(maze)==true)
+		//כאן זה מאותה סיבה שמקודם
+		//אם יש פתרון ונרצה לייצר פתרון חדש בגלל תזוזת השחקן ע"י המשתמש
+		/*if(mazeSolMap.containsKey(maze)==true)
 			notifyString("Solution for maze "+args[1]+" is alredy exists");
-		else
+		else*/
 		{
 		Callable<Solution<Position>> call = new Callable<Solution<Position>>() {
 			@Override
@@ -284,7 +288,18 @@ public class MyModel extends Observable implements Model
 				return sol;
 			}
 		};
-		threadpool.submit(call);
+		Future<Solution<Position>> future = threadpool.submit(call);
+		//check
+		//אני לא הבנתי כל כך למה צריך לעשות את זה כדי להציג את הפתרון
+		//System.out.println(future.isDone());
+		try {
+			future.get();
+			//System.out.println(future.isDone());
+		} catch (InterruptedException e) {
+			notifyString(e.getMessage());
+		} catch (ExecutionException e) {
+			notifyString(e.getMessage());
+		}
 		}
 	}
 
@@ -322,12 +337,17 @@ public class MyModel extends Observable implements Model
 			return sol;
 			}
 		};
-		threadpool.submit(call);
+		Future<Solution<Position>> future = threadpool.submit(call);
 	}
 	
 	public void setSolution(Solution<Position> solution, String name) {
-		if(solutionMap.containsKey(name)==false)
+		//שינית את זה כדי שאם השחקן יתקדם צעדים לא לפי המסלול ונרצה פתרון חדש יהיה ניתן להציג את הפתרון החדש
+		//אם השחקן יזוז כאשר נפעיל את הפתרון לא יהיה בזה צורך כי לשחקן לא תהיה את האופציה להזיז את המקשים עד ההגעה לנקודת הסיום
+		//עשיתי הערה על התנאי כדי שאם נבקש רמז הוא בעצם צריך לחשב מסלול חדש 
+		//אם אתה משנה את הרמז אז אולי תוכל להחזיר את התנאי
+		//if(solutionMap.containsKey(name)==false)
 		{
+			System.out.println("new");
 			solutionMap.put(name, solution);
 			notifyString("solution for " +name+ " is ready");
 		}
@@ -461,6 +481,20 @@ public class MyModel extends Observable implements Model
 			}
 		}
 		return t;
+	}
+	
+	//זה הפונקציה שמביאה את הרמז
+	//תשנה את זה אם אתה רוצה שזה יעשה משהו אחר
+	public int getNumOfStopToGoal(String name)
+	{
+		if(maze3dMap.containsKey(name)==true)
+		{
+			solveMaze(("solve "+name+" "+properties.getAlgorithmSearchName()).split(" "),maze3dMap.get(name));
+			
+			return solutionMap.get(name).getSol().size();
+		}
+		else
+			return -1;
 	}
 }
 

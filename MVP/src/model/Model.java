@@ -30,4 +30,5 @@ public interface Model {
 	void generateMaze3d();
 	void solveMaze();
 	public String[] getNamesMaze3d();
+	public int getNumOfStopToGoal(String name);
 }

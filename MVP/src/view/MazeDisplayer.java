@@ -60,6 +60,10 @@ public abstract class MazeDisplayer extends Canvas{
 	public abstract Solution<Position> getSol();
 
 	public abstract void setSol(Solution<Position> sol);
+	
+	public abstract boolean isFinish();
+
+	public abstract void setFinish(boolean finish);
 
 	
 

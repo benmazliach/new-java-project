@@ -22,7 +22,10 @@ public class Maze2D extends MazeDisplayer{
 	private Position goalPosition;
 	private Position character;
 	private Solution<Position> sol;
+	private boolean finish;
 	
+	
+	//תנזה להבין איך מפרידים את החייל מהמשחק שכאילו בתוך מחלקה זו לא יהיה את כל החלק של התמונות הספציפיות האלה כדי שהמבוך יהיה יור גינרי
 
 	public Maze2D(Composite parent, int style) {
 		super(parent, style);
@@ -41,6 +44,7 @@ public class Maze2D extends MazeDisplayer{
 					setBackground(white);
 					return;
 				}
+				
 				Image m = null;
 				
 				e.gc.setForeground(new Color(null,0,0,0));
@@ -51,6 +55,14 @@ public class Maze2D extends MazeDisplayer{
 
 				int w=width/mazeData[0].length;
 			 	int h=height/mazeData.length;
+			 	
+			 	if(character.equals(goalPosition)==true)
+			 	{
+			 		m = new Image(getDisplay(), "resources/Treasure.jpg");
+	        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,0,0,width,height);
+	        		finish = true;
+	        		return;
+			 	}
 				
 			 	for(int i=0;i<mazeData.length;i++)
 			 	{
@@ -67,6 +79,8 @@ public class Maze2D extends MazeDisplayer{
 				        		{
 				        			if(sol.getSol().contains(new State<Position>(new Position(character.getpX(), i, j))) == true)
 					        		{
+				        				if(character.equals(new Position(character.getpX(), i, j))==true)
+				        					sol.getSol().remove(new State<Position>(new Position(character.getpX(), i, j)));
 				        				m = new Image(getDisplay(), "resources/coin.jpg");
 						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 					        		}
@@ -75,13 +89,13 @@ public class Maze2D extends MazeDisplayer{
 				        		{
 				        			if(j==goalPosition.getpZ()&&i==goalPosition.getpY())
 						        	{
-				        				m = new Image(getDisplay(), "resources/goalPos.jpg");
-						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+				        				m = new Image(getDisplay(), "resources/Treasure.jpg");
+				        				e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 						        	}
 				        		}
 				        		if(j==character.getpZ()&&i==character.getpY())
-					        	{
-					        		m = new Image(getDisplay(), "resources/pacman.png");
+				        		{
+					        		m = new Image(getDisplay(), "resources/piratesIm.jpg");
 					        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 					        	}
 				        	}
@@ -91,8 +105,10 @@ public class Maze2D extends MazeDisplayer{
 				        		{
 				        			if(sol.getSol().contains(new State<Position>(new Position(j, character.getpY(), i))) == true)
 					        		{
+				        				if(character.equals(new Position(j, character.getpY(), i))==true)
+				        					sol.getSol().remove(new State<Position>(new Position(j, character.getpY(), i)));
 				        				m = new Image(getDisplay(), "resources/coin.jpg");
-						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+				        				e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 					        		}
 				        		}
 				        		if(character.getpY()==goalPosition.getpY())
@@ -105,7 +121,7 @@ public class Maze2D extends MazeDisplayer{
 				        		}
 				        		if(j==character.getpX()&&i==character.getpZ())
 					        	{
-					        		m = new Image(getDisplay(), "resources/pacman.png");
+					        		m = new Image(getDisplay(), "resources/piratesIm.jpg");
 					        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 					        	}
 				        	}
@@ -115,6 +131,8 @@ public class Maze2D extends MazeDisplayer{
 				        		{
 				        			if(sol.getSol().contains(new State<Position>(new Position(j, i, character.getpZ()))) == true)
 					        		{
+				        				if(character.equals(new Position(j, i, character.getpZ()))==true)
+				        						sol.getSol().remove(new State<Position>(new Position(j, i, character.getpZ())));
 				        				m = new Image(getDisplay(), "resources/coin.jpg");
 						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 					        		}
@@ -129,7 +147,7 @@ public class Maze2D extends MazeDisplayer{
 				        		}
 				        		if(j==character.getpX()&&i==character.getpY())
 					        	{
-					        		m = new Image(getDisplay(), "resources/pacman.png");
+					        		m = new Image(getDisplay(), "resources/piratesIm.jpg");
 					        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
 					        	}
 				        	}
@@ -340,23 +358,7 @@ public class Maze2D extends MazeDisplayer{
 			}
 		}
 	}
-
-	/*public int getCharacterX() {
-		return characterX;
-	}
-
-	public void setCharacterX(int characterX) {
-		this.characterX = characterX;
-	}
-
-	public int getCharacterY() {
-		return characterY;
-	}
-
-	public void setCharacterY(int characterY) {
-		this.characterY = characterY;
-	}*/
-
+	
 	public Position getCharacter() {
 		return character;
 	}
@@ -371,6 +373,14 @@ public class Maze2D extends MazeDisplayer{
 
 	public void setSol(Solution<Position> sol) {
 		this.sol = sol;
+	}
+	
+	public boolean isFinish() {
+		return finish;
+	}
+
+	public void setFinish(boolean finish) {
+		this.finish = finish;
 	}
 
 }

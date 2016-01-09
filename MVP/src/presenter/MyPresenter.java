@@ -83,6 +83,17 @@ public class MyPresenter implements Presenter,Observer{
 					view.displayString("error");
 			}
 		});
+		//hint <mazeName>
+		commandsMap.put("hint", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				if(args[0].equals("hint"))
+					view.displayString(""+model.getNumOfStopToGoal(args[1]));
+				else
+					view.displayString("error");
+			}
+		});
 		//dir <path>
 		commandsMap.put("dir", new Command() {
 			

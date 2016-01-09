@@ -205,4 +205,16 @@ public class Maze3D extends MazeDisplayer {
 		
 	}
 
+	@Override
+	public boolean isFinish() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setFinish(boolean finish) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
