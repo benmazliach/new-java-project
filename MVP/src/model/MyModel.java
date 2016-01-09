@@ -483,15 +483,16 @@ public class MyModel extends Observable implements Model
 		return t;
 	}
 	
-	//זה הפונקציה שמביאה את הרמז
+	//זו הפונקציה שמביאה את הרמז
 	//תשנה את זה אם אתה רוצה שזה יעשה משהו אחר
-	public int getNumOfStopToGoal(String name)
+	public /*State<Position>*/ int getNumOfStopToGoal(String name)
 	{
+		// יחזיר את הפוזישן הראשון ופשוט נציג אותו
 		if(maze3dMap.containsKey(name)==true)
 		{
 			solveMaze(("solve "+name+" "+properties.getAlgorithmSearchName()).split(" "),maze3dMap.get(name));
 			
-			return solutionMap.get(name).getSol().size();
+			return solutionMap.get(name).getSol()/*.get(0)*/.size();
 		}
 		else
 			return -1;

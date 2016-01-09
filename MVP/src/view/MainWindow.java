@@ -1,6 +1,11 @@
 package view;
 
 
+import java.beans.XMLDecoder;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,10 +21,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -30,6 +38,7 @@ import algorithms.search.Solution;
 import algorithms.search.State;
 import model.MyModel;
 import presenter.MyPresenter;
+import presenter.Properties;
 
 public class MainWindow extends BasicWindow implements View{
 
@@ -52,7 +61,43 @@ public class MainWindow extends BasicWindow implements View{
 		shell.setLayout(new GridLayout(2,false));
 		
 		//להוסיף TOOLBAR עם על מה שכתבתי לך ועם כל מה שכתוב במטלה של חלק 4
+		///////////////////////////////////////toolbar//////////////////////////////////////////////////
+		Menu menuBar, fileInMenuBar, gameInMenuBar;
+		MenuItem fileMenuHeader, gameMenuHeader, generateItem,
+				 solveItem, openPropertiesItem, exitItem, exitFromMazeItem;
 		
+		menuBar = new Menu(shell,SWT.BAR);
+		fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+		fileMenuHeader.setText("&File");
+		
+		fileInMenuBar = new Menu(shell, SWT.DROP_DOWN);
+		fileMenuHeader.setMenu(fileInMenuBar);
+		
+		openPropertiesItem = new MenuItem(fileInMenuBar, SWT.PUSH);
+		openPropertiesItem.setText("&Open Properties");
+		
+		exitItem = new MenuItem(fileInMenuBar, SWT.PUSH);
+		exitItem.setText("&Exit");
+		
+		gameMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+		gameMenuHeader.setText("&Game");
+		
+		gameInMenuBar = new Menu(shell, SWT.DROP_DOWN);
+		gameMenuHeader.setMenu(gameInMenuBar);
+		
+		
+		generateItem = new MenuItem(gameInMenuBar, SWT.PUSH);
+		generateItem.setText("&Generate maze");
+			
+		solveItem = new MenuItem(gameInMenuBar, SWT.PUSH);
+		solveItem.setText("&Solve maze");
+		
+		exitFromMazeItem = new MenuItem(gameInMenuBar, SWT.PUSH);
+		exitFromMazeItem.setText("&stop displaying the maze");
+		
+		shell.setMenuBar(menuBar);
+		
+		//////////////////////////////widgets//////////////////////////////////
 		//Buttons group
 		Group buttonsGroup = new Group(shell, SWT.NONE);
 		buttonsGroup.setText("Options:");
@@ -77,7 +122,7 @@ public class MainWindow extends BasicWindow implements View{
 		solveButton.setText("Solve maze");
 		solveButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
 						
-		//dispaly maze button
+		//dispaly maze button----------------------------------------------------???
 		Button hintButton=new Button(buttonsGroup, SWT.PUSH);
 		hintButton.setText("Hint");
 		hintButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
@@ -120,6 +165,165 @@ public class MainWindow extends BasicWindow implements View{
 		
 		possibleMoves(b);
 		
+		/////////////////////////////////////listeners///////////////////////////////////
+		
+		exitItem.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent event) {	
+	    		shell.close();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		exitFromMazeItem.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				//?
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		openPropertiesItem.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				FileDialog fd = new FileDialog(shell, SWT.OPEN);
+		        fd.setText("Open Properties");
+		        
+		        try {
+					fd.setFilterPath(new java.io.File(".").getCanonicalPath());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		        
+		        String[] filterExt = { "*.xml" };
+		        fd.setFilterExtensions(filterExt);
+		        String selected = fd.open();
+		        
+		        if(selected != null){
+		        	XMLDecoder d;
+		    		Properties properties = new Properties();
+		    		try {
+		    			d = new XMLDecoder(new BufferedInputStream(new FileInputStream(selected)));
+		    			properties = (Properties) d.readObject();
+		    			d.close();
+		    		} catch (FileNotFoundException e) {
+		    			e.printStackTrace();
+		    		}
+		    		setCommand("".split(" "));//TODO prop
+		        }
+		        	
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+				}				
+			});
+		
+		/*b[0].addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				mazeDisplayer.moveUp();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		b[1].addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				movePageUp();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		b[2].addSelectionListener(new SelectionListener() {
+				
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				mazeDisplayer.moveLeft();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+			
+		b[3].addSelectionListener(new SelectionListener() {
+		
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				mazeDisplayer.moveRight();					
+			}
+		
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+			
+			}
+		});
+			
+		b[4].addSelectionListener(new SelectionListener() {
+				
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				mazeDisplayer.moveDown();
+			}
+				
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+			// TODO Auto-generated method stub
+					
+			}
+		});
+				
+		b[5].addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				movePageDown();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});*/
+				
 		sectionXButton.addSelectionListener(new SelectionListener() {
 			
 			@Override
@@ -288,7 +492,7 @@ public class MainWindow extends BasicWindow implements View{
 						mazeDisplayer.setSol(null);
 						mazeDisplayer.setFinish(false);
 						nameCurrentMaze = mazes[list.getFocusIndex()];
-						setCommand(("display "+nameCurrentMaze).split(" "));
+						setCommand(("display " + nameCurrentMaze).split(" "));
 						possibleMoves(b);
 						chooseShell.close();
 					}
@@ -312,14 +516,14 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 		
-		solveButton.addSelectionListener(new SelectionListener() {
+		solveButton.addSelectionListener(new SelectionListener() {//לא עובד עד הסוף
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				if(nameCurrentMaze!=null)
 				{
 					maze.setStartPosition(mazeDisplayer.getCharacter());
-					//change bfs
+					//change BFS
 					//תבדוק מה אפשר לעשות כדי שנוכל לדעת באיזה אלגוריתם להשתמש ביצירת פתרון
 					//אולי דרך קבלת הפתרון או שהמשתמש יבחר מאופציות שניתן לו כמו ביצירת המבוך
 					setCommand(("solve "+nameCurrentMaze+" "+"BFS").split(" "));
