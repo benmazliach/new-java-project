@@ -487,7 +487,7 @@ public class MyModel extends Observable implements Model
 	//תשנה את זה אם אתה רוצה שזה יעשה משהו אחר
 	public /*State<Position>*/ int getNumOfStopToGoal(String name)
 	{
-		// יחזיר את הפוזישן הראשון ופשוט נציג אותו
+		//-> יחזיר את הפוזישן הראשון ופשוט נציג אותו
 		if(maze3dMap.containsKey(name)==true)
 		{
 			solveMaze(("solve "+name+" "+properties.getAlgorithmSearchName()).split(" "),maze3dMap.get(name));

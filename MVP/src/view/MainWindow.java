@@ -93,7 +93,7 @@ public class MainWindow extends BasicWindow implements View{
 		solveItem.setText("&Solve maze");
 		
 		exitFromMazeItem = new MenuItem(gameInMenuBar, SWT.PUSH);
-		exitFromMazeItem.setText("&stop displaying the maze");
+		exitFromMazeItem.setText("&Stop displaying the maze");
 		
 		shell.setMenuBar(menuBar);
 		
@@ -223,106 +223,105 @@ public class MainWindow extends BasicWindow implements View{
 		    			e.printStackTrace();
 		    		}
 		    		setCommand("".split(" "));//TODO prop
+///////////////////////////////////////////////^////////////////////////////////////////////////////////////
+///////////////////////////////////////////////|////////////////////////////////////////////////////////////
 		        }
 		        	
 			}
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-				}				
+			public void widgetDefaultSelected(SelectionEvent arg0) {}				
 			});
 		
-		/*b[0].addSelectionListener(new SelectionListener() {
+		b[0].addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				mazeDisplayer.moveUp();
+				if(mazeDisplayer.getMazeData()!=null)
+				{
+					mazeDisplayer.moveUp();
+					possibleMoves(b);
+				}
 			}
 			
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 		
 		b[1].addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				movePageUp();
+				if(mazeDisplayer.getMazeData()!=null)
+				{
+					movePageUp();
+					possibleMoves(b);
+				}
 			}
 			
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 		
 		b[2].addSelectionListener(new SelectionListener() {
 				
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				mazeDisplayer.moveLeft();
+				if(mazeDisplayer.getMazeData()!=null)
+				{
+					mazeDisplayer.moveLeft();
+					possibleMoves(b);
+				}
 			}
 			
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 			
 		b[3].addSelectionListener(new SelectionListener() {
 		
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				mazeDisplayer.moveRight();					
+				if(mazeDisplayer.getMazeData()!=null)
+				{
+					mazeDisplayer.moveRight();					
+					possibleMoves(b);
+				}
 			}
 		
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-			
-			}
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 			
 		b[4].addSelectionListener(new SelectionListener() {
 				
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				mazeDisplayer.moveDown();
+				if(mazeDisplayer.getMazeData()!=null)
+				{
+					mazeDisplayer.moveDown();
+					possibleMoves(b);
+				}
 			}
 				
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-			// TODO Auto-generated method stub
-					
-			}
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 				
 		b[5].addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				movePageDown();
+				if(mazeDisplayer.getMazeData()!=null)
+				{
+					movePageDown();
+					possibleMoves(b);
+				}
 			}
 			
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-		});*/
+			public void widgetDefaultSelected(SelectionEvent arg0){}
+		});
 				
 		sectionXButton.addSelectionListener(new SelectionListener() {
 			
@@ -546,9 +545,12 @@ public class MainWindow extends BasicWindow implements View{
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				maze.setStartPosition(mazeDisplayer.getCharacter());
-				setCommand(("hint "+nameCurrentMaze).split(" "));
-				maze.setStartPosition(mazeDisplayer.getStartPosition());
+				if(mazeDisplayer.getMazeData()!=null)
+				{
+					maze.setStartPosition(mazeDisplayer.getCharacter());
+					setCommand(("hint "+nameCurrentMaze).split(" "));
+					maze.setStartPosition(mazeDisplayer.getStartPosition());
+				}
 			}
 			
 			@Override
@@ -558,7 +560,10 @@ public class MainWindow extends BasicWindow implements View{
 		mazeDisplayer.addKeyListener(new KeyListener() {
 			
 			@Override
-			public void keyReleased(KeyEvent arg0) {
+			public void keyReleased(KeyEvent arg0) {}
+			
+			@Override
+			public void keyPressed(KeyEvent arg0) {
 				if(mazeDisplayer.isFinish()==false)
 				{
 					switch(arg0.keyCode)
@@ -578,11 +583,6 @@ public class MainWindow extends BasicWindow implements View{
 					}
 				}
 				possibleMoves(b);
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-				
 			}
 		});
 		

@@ -12,7 +12,6 @@ import algorithms.search.Solution;
 // (2) other programmers can use it naturally
 public abstract class MazeDisplayer extends Canvas{
 	
-	// just as a stub...
 	protected int[][] mazeData;
 
 	
