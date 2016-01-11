@@ -303,6 +303,10 @@ public class MyModel extends Observable implements Model
 		}
 	}
 
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+	}
+
 	@Override
 	public void solveMaze() {
 		Callable<Solution<Position>> call = new Callable<Solution<Position>>() {

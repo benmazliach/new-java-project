@@ -24,33 +24,40 @@ public class MyPresenter implements Presenter,Observer{
 	public void update(Observable o, Object arg) {
 		if(o==view)
 		{
-			String[] args = view.getArgs();
-			boolean dos = false;
-			String s = null;
-			for(int i=0;i<args.length;i++)
+			if(arg==null)
 			{
-				if(commandsMap.containsKey(s)== true && dos == false)
+				String[] args = view.getArgs();
+				boolean dos = false;
+				String s = null;
+				for(int i=0;i<args.length;i++)
 				{
-					dos = true;
+					if(commandsMap.containsKey(s)== true && dos == false)
+					{
+						dos = true;
+					}
+					else
+					{
+						if(dos==false)
+						{
+							if(s==null)
+								s = args[i];
+							else if(s!=null)
+								s = s + " " +args[i];
+						}
+					}
+				}
+				if(commandsMap.containsKey(s)==true)
+				{
+					commandsMap.get(s).doCommand(args);
 				}
 				else
 				{
-					if(dos==false)
-					{
-						if(s==null)
-							s = args[i];
-						else if(s!=null)
-							s = s + " " +args[i];
-					}
+					view.displayString("Error");
 				}
-			}
-			if(commandsMap.containsKey(s)==true)
+			} 
+			else if(arg.getClass().getName().equals("presenter.Properties")==true)
 			{
-				commandsMap.get(s).doCommand(args);
-			}
-			else
-			{
-				view.displayString("Error");
+				model.setProperties((Properties)arg);
 			}
 		}
 		if(o==model)
@@ -72,6 +79,21 @@ public class MyPresenter implements Presenter,Observer{
 	
 	public void putCommandsMap()
 	{
+		//get solve algorithm
+			commandsMap.put("solveAlgorithm", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				view.setSolveAlg(model.getProperties().getAlgorithmSearchName());
+			}
+		});
+		//load properties
+			commandsMap.put("load properties", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+			}
+		});
 		//display all the existing mazes
 		commandsMap.put("mazeName", new Command() {
 			

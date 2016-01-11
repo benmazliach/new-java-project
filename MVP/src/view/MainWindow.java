@@ -7,14 +7,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -52,6 +51,7 @@ public class MainWindow extends BasicWindow implements View{
 	private MazeDisplayer mazeDisplayer;
 	private Maze3d maze;
 	private Group arrowsGroup;
+	private String solveAlg;
 	
 	public MainWindow(String title, int x, int y) {
 		super(title, x, y);
@@ -60,13 +60,18 @@ public class MainWindow extends BasicWindow implements View{
 
 	@Override
 	void initWidgets() {
+		
+		//TODO : save maze,load maze,dir,maze size,file size
+		//TODO : תמיד לפתוח הודעה אם לא קיים מבוך או קובץ
+		//TODO : Load file - שואל בעזרת דיאלוג איזה קובץ לטעון
+		
 		shell.setLayout(new GridLayout(2,false));
 		
 		//להוסיף TOOLBAR עם על מה שכתבתי לך ועם כל מה שכתוב במטלה של חלק 4
 		///////////////////////////////////////toolbar//////////////////////////////////////////////////
 		Menu menuBar, fileInMenuBar, gameInMenuBar;
 		MenuItem fileMenuHeader, gameMenuHeader, generateItem,
-				 solveItem, openPropertiesItem, exitItem, exitFromMazeItem;
+				 solveItem, openPropertiesItem, exitItem;
 		
 		menuBar = new Menu(shell,SWT.BAR);
 		fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
@@ -94,9 +99,6 @@ public class MainWindow extends BasicWindow implements View{
 		solveItem = new MenuItem(gameInMenuBar, SWT.PUSH);
 		solveItem.setText("&Solve maze");
 		
-		exitFromMazeItem = new MenuItem(gameInMenuBar, SWT.PUSH);
-		exitFromMazeItem.setText("&Stop displaying the maze");
-		
 		shell.setMenuBar(menuBar);
 		
 		//////////////////////////////widgets//////////////////////////////////
@@ -119,12 +121,17 @@ public class MainWindow extends BasicWindow implements View{
 		mazeDisplayer = new Maze2D(shell, SWT.BORDER);
 		mazeDisplayer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 4));
 		
-		//generate maze button
+		//display solution maze button
 		Button solveButton=new Button(buttonsGroup, SWT.PUSH);
-		solveButton.setText("Solve maze");
+		solveButton.setText("Display solution");
 		solveButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+		
+		//move character to goal button
+		Button solButton=new Button(buttonsGroup, SWT.PUSH);
+		solButton.setText("Solve maze");
+		solButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
 						
-		//dispaly maze button----------------------------------------------------???
+		//hint button
 		Button hintButton=new Button(buttonsGroup, SWT.PUSH);
 		hintButton.setText("Hint");
 		hintButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
@@ -177,24 +184,7 @@ public class MainWindow extends BasicWindow implements View{
 			}
 			
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
-		exitFromMazeItem.addSelectionListener(new SelectionListener() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				//?
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 		
 		openPropertiesItem.addSelectionListener(new SelectionListener() {
@@ -224,9 +214,8 @@ public class MainWindow extends BasicWindow implements View{
 		    		} catch (FileNotFoundException e) {
 		    			e.printStackTrace();
 		    		}
-		    		setCommand("".split(" "));//TODO prop
-///////////////////////////////////////////////^////////////////////////////////////////////////////////////
-///////////////////////////////////////////////|////////////////////////////////////////////////////////////
+		    		setChanged();
+		    		notifyObservers(properties);
 		        }
 		        	
 			}
@@ -239,7 +228,7 @@ public class MainWindow extends BasicWindow implements View{
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				if(mazeDisplayer.getMazeData()!=null)
+				if(mazeDisplayer.getMazeData()!=null && mazeDisplayer.isFinish()==false)
 				{
 					mazeDisplayer.moveUp();
 					possibleMoves(b);
@@ -254,7 +243,7 @@ public class MainWindow extends BasicWindow implements View{
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				if(mazeDisplayer.getMazeData()!=null)
+				if(mazeDisplayer.getMazeData()!=null && mazeDisplayer.isFinish()==false)
 				{
 					movePageUp();
 					possibleMoves(b);
@@ -269,7 +258,7 @@ public class MainWindow extends BasicWindow implements View{
 				
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				if(mazeDisplayer.getMazeData()!=null)
+				if(mazeDisplayer.getMazeData()!=null && mazeDisplayer.isFinish()==false)
 				{
 					mazeDisplayer.moveLeft();
 					possibleMoves(b);
@@ -284,7 +273,7 @@ public class MainWindow extends BasicWindow implements View{
 		
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				if(mazeDisplayer.getMazeData()!=null)
+				if(mazeDisplayer.getMazeData()!=null && mazeDisplayer.isFinish()==false)
 				{
 					mazeDisplayer.moveRight();					
 					possibleMoves(b);
@@ -299,7 +288,7 @@ public class MainWindow extends BasicWindow implements View{
 				
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				if(mazeDisplayer.getMazeData()!=null)
+				if(mazeDisplayer.getMazeData()!=null && mazeDisplayer.isFinish()==false)
 				{
 					mazeDisplayer.moveDown();
 					possibleMoves(b);
@@ -314,7 +303,7 @@ public class MainWindow extends BasicWindow implements View{
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				if(mazeDisplayer.getMazeData()!=null)
+				if(mazeDisplayer.getMazeData()!=null && mazeDisplayer.isFinish()==false)
 				{
 					movePageDown();
 					possibleMoves(b);
@@ -517,6 +506,43 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
 		
+		solButton.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				if(nameCurrentMaze!=null)
+				{
+					maze.setStartPosition(mazeDisplayer.getCharacter());
+					setCommand("solveAlgorithm".split(" "));
+					setCommand(("solve "+nameCurrentMaze+" "+solveAlg).split(" "));
+					maze.setStartPosition(mazeDisplayer.getStartPosition());
+					setCommand(("display solution "+nameCurrentMaze).split(" "));
+					timer=new Timer();
+					task=new TimerTask() {
+						@Override
+						public void run() {
+							display.syncExec(new Runnable() {
+								@Override
+								public void run() {
+									Walk(mazeDisplayer.getSol());
+								}
+							});
+						}
+					};				
+					timer.scheduleAtFixedRate(task, 0, 500);
+				}
+				else
+				{
+					MessageBox message = new MessageBox(shell,SWT.ICON_ERROR| SWT.YES);
+					message.setMessage("You have to choose a maze first!!!");
+					message.open();
+				}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+		
 		solveButton.addSelectionListener(new SelectionListener() {//לא עובד עד הסוף
 			
 			@Override
@@ -524,10 +550,8 @@ public class MainWindow extends BasicWindow implements View{
 				if(nameCurrentMaze!=null)
 				{
 					maze.setStartPosition(mazeDisplayer.getCharacter());
-					//change BFS
-					//תבדוק מה אפשר לעשות כדי שנוכל לדעת באיזה אלגוריתם להשתמש ביצירת פתרון
-					//אולי דרך קבלת הפתרון או שהמשתמש יבחר מאופציות שניתן לו כמו ביצירת המבוך
-					setCommand(("solve "+nameCurrentMaze+" "+"BFS").split(" "));
+					setCommand("solveAlgorithm".split(" "));
+					setCommand(("solve "+nameCurrentMaze+" "+solveAlg).split(" "));
 					maze.setStartPosition(mazeDisplayer.getStartPosition());
 					setCommand(("display solution "+nameCurrentMaze).split(" "));
 				}
@@ -747,7 +771,7 @@ public class MainWindow extends BasicWindow implements View{
 		{
 			temp.add(sol.getSol().get(i));
 		}
-		mazeDisplayer.setSol(new Solution<>(temp));
+		mazeDisplayer.setSol(new Solution<Position>(temp));
 		mazeDisplayer.redraw();
 	}
 
@@ -901,4 +925,43 @@ public class MainWindow extends BasicWindow implements View{
 		return true;
 	}
 
+
+	public String getSolveAlg() {
+		return solveAlg;
+	}
+
+
+	public void setSolveAlg(String solveAlg) {
+		this.solveAlg = solveAlg;
+	}
+
+	private void Walk(Solution<Position> sol){
+		System.out.println(sol.getSol().size());
+		if(sol.getSol().size()>0)
+		{
+			int x = sol.getSol().get(0).getState().getpX();
+			int y = sol.getSol().get(0).getState().getpY();
+			int z = sol.getSol().get(0).getState().getpZ();
+			
+			if(mazeDisplayer.getSection().equals("y"))
+			{
+				if(mazeDisplayer.getCharacter().getpX()>x)
+					mazeDisplayer.moveLeft();
+				else if(mazeDisplayer.getCharacter().getpX()<x)
+					mazeDisplayer.moveRight();
+				else if(mazeDisplayer.getCharacter().getpZ()>z)
+					mazeDisplayer.moveUp();
+				else if(mazeDisplayer.getCharacter().getpZ()<z)
+					mazeDisplayer.moveDown();
+				else if(mazeDisplayer.getCharacter().getpY()>y)
+					movePageDown();
+				else if(mazeDisplayer.getCharacter().getpY()<y)
+					movePageUp();
+			}
+			sol.getSol().remove(0);
+		}
+		else
+			timer.cancel();
+	}
+	
 }

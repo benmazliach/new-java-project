@@ -437,5 +437,17 @@ public class MenuWindow extends BasicWindow implements View{
 				System.out.println("char: "+character);
 			}
 	}
+
+	@Override
+	public String getSolveAlg() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setSolveAlg(String solveAlg) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 

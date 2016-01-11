@@ -10,6 +10,7 @@ import algorithms.search.State;
 public class MyView extends CommonView{
 
 	private CLI cli;
+	private String solveAlgo;
 	
 	
 	public MyView(CLI cli) {
@@ -95,6 +96,18 @@ public class MyView extends CommonView{
 		for (String string : mazes) {
 			System.out.println(string);
 		}
+	}
+
+	@Override
+	public String getSolveAlg() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setSolveAlg(String solveAlg) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

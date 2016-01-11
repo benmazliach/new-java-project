@@ -24,16 +24,16 @@ public class Run {
 	public static void main(String[] args) { 
 		Properties pr = new Properties();
 		pr.setAlgorithmGenerateName("MyMaze3dGenerator");
-		pr.setAlgorithmSearchName("BFS");
+		pr.setAlgorithmSearchName("Astar Air Distance");
 		pr.setNumOfThreads(10);
 		pr.setXSize(12);
 		pr.setYSize(5);
 		pr.setZSize(12);
-		pr.setUserInterface("CLI");
+		pr.setUserInterface("GUI");
 		pr.setMazeName("mainMaze");
 		
 		try {
-			FileOutputStream file = new FileOutputStream("properties.xml");
+			FileOutputStream file = new FileOutputStream("properties1.xml");
 			BufferedOutputStream bos = new BufferedOutputStream(file);
 			XMLEncoder s = new XMLEncoder(bos);
 			s.writeObject(pr);
@@ -47,8 +47,8 @@ public class Run {
 			e.printStackTrace();
 		}
 		//Properties pr = new Properties();
-		try {
-			FileInputStream file = new FileInputStream("properties.xml");
+		/*try {
+			FileInputStream file = new FileInputStream("properties1.xml");
 			BufferedInputStream bis = new BufferedInputStream(file);
 			XMLDecoder s = new XMLDecoder(bis);
 			pr = (Properties) s.readObject();
@@ -85,7 +85,7 @@ public class Run {
 		 
 		m.addObserver(p);
 		v.addObserver(p);
-		v.start();
+		v.start();*/
 		/*MyMaze3dGenerator m = new MyMaze3dGenerator(3,3,3);
 		
 		m.getMaze().printMaze();

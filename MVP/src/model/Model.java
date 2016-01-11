@@ -3,6 +3,7 @@ package model;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
+import presenter.Properties;
 
 public interface Model {
 	
@@ -31,4 +32,7 @@ public interface Model {
 	void solveMaze();
 	public String[] getNamesMaze3d();
 	public int getNumOfStopToGoal(String name);
+	public void setProperties(Properties properties);
+	public Properties getProperties();
+	
 }

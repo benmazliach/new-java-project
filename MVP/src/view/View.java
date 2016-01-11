@@ -15,4 +15,6 @@ public interface View {
 	void displayCrossSection(int[][] arr, String sectionType, String name, String section);
 	public String[] getMazes();
 	public void setMazes(String[] mazes);
+	public String getSolveAlg();
+	public void setSolveAlg(String solveAlg);
 }
