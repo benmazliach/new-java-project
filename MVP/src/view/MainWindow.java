@@ -13,6 +13,8 @@ import java.util.TimerTask;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -577,9 +579,9 @@ public class MainWindow extends BasicWindow implements View{
 					case SWT.ARROW_RIGHT: mazeDisplayer.moveRight();
 							break;
 					case SWT.PAGE_UP: movePageUp();
-						break;
+							break;
 					case SWT.PAGE_DOWN: movePageDown();
-						break;
+							break;
 					}
 				}
 				possibleMoves(b);
