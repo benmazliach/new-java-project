@@ -1,13 +1,11 @@
 package view;
 
-
 import java.beans.XMLDecoder;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -69,11 +67,12 @@ public class MainWindow extends BasicWindow implements View{
 		
 		//להוסיף TOOLBAR עם על מה שכתבתי לך ועם כל מה שכתוב במטלה של חלק 4
 		///////////////////////////////////////toolbar//////////////////////////////////////////////////
-		Menu menuBar, fileInMenuBar, gameInMenuBar;
-		MenuItem fileMenuHeader, gameMenuHeader, generateItem,
-				 solveItem, openPropertiesItem, exitItem;
+		Menu menuBar, fileInMenuBar, gameInMenuBar, helpInMenuBar;
+		MenuItem fileMenuHeader, gameMenuHeader, helpMenuHeader, 
+		generateItem, solveItem, openPropertiesItem, exitItem, aboutItem;
 		
 		menuBar = new Menu(shell,SWT.BAR);
+		
 		fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 		fileMenuHeader.setText("&File");
 		
@@ -91,13 +90,21 @@ public class MainWindow extends BasicWindow implements View{
 		
 		gameInMenuBar = new Menu(shell, SWT.DROP_DOWN);
 		gameMenuHeader.setMenu(gameInMenuBar);
-		
-		
+				
 		generateItem = new MenuItem(gameInMenuBar, SWT.PUSH);
 		generateItem.setText("&Generate maze");
 			
 		solveItem = new MenuItem(gameInMenuBar, SWT.PUSH);
 		solveItem.setText("&Solve maze");
+		
+		helpMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+		helpMenuHeader.setText("&Help");
+		
+		helpInMenuBar = new Menu(shell, SWT.DROP_DOWN);
+		helpMenuHeader.setMenu(helpInMenuBar);
+		
+		aboutItem = new MenuItem(helpInMenuBar, SWT.PUSH);
+		aboutItem.setText("&About");
 		
 		shell.setMenuBar(menuBar);
 		
@@ -222,7 +229,28 @@ public class MainWindow extends BasicWindow implements View{
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {}				
-			});
+		});
+		
+		aboutItem.addSelectionListener(new SelectionListener() {
+			////////////////////////////////////////TODO \n???////////////////////////////////////////////////////
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				MessageBox mb = new MessageBox(shell , SWT.ICON_INFORMATION | SWT.YES);
+				String message = "Developers: Ben mazliach & Or moshe\n";
+				message += "Verision: 1.0\n";
+				message += "Contact us via our e-mails:\n";
+				message += "Ben - benmazliach@gmail.com, ";
+				message += "Or - ormoshe2204@gmail.com";
+
+				mb.setText("About");
+				mb.setMessage(message);
+				mb.open();
+				}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+		
 		
 		b[0].addSelectionListener(new SelectionListener() {
 			
