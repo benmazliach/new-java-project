@@ -236,9 +236,9 @@ public class MainWindow extends BasicWindow implements View{
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				MessageBox mb = new MessageBox(shell , SWT.ICON_INFORMATION | SWT.YES);
-				String message = "Developers: Ben mazliach & Or moshe\n";
-				message += "Verision: 1.0\n";
-				message += "Contact us via our e-mails:\n";
+				String message = "Developers: Ben mazliach & Or moshe\n\n";
+				message += "Verision: 1.0\n\n";
+				message += "Contact us via e-mail:\n";
 				message += "Ben - benmazliach@gmail.com, ";
 				message += "Or - ormoshe2204@gmail.com";
 
