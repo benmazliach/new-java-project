@@ -69,7 +69,8 @@ public class MainWindow extends BasicWindow implements View{
 		///////////////////////////////////////toolbar//////////////////////////////////////////////////
 		Menu menuBar, fileInMenuBar, gameInMenuBar, helpInMenuBar;
 		MenuItem fileMenuHeader, gameMenuHeader, helpMenuHeader, 
-		generateItem, solveItem, openPropertiesItem, exitItem, aboutItem;
+		generateItem, solveItem, openPropertiesItem, exitItem, aboutItem,
+		saveMazeInFileItem, loadMazeInFileItem, mazeSizeItem, fileSizeItem;
 		
 		menuBar = new Menu(shell,SWT.BAR);
 		
@@ -90,7 +91,10 @@ public class MainWindow extends BasicWindow implements View{
 		
 		gameInMenuBar = new Menu(shell, SWT.DROP_DOWN);
 		gameMenuHeader.setMenu(gameInMenuBar);
-				
+
+		saveMazeInFileItem = new MenuItem(gameInMenuBar, SWT.PUSH);
+		saveMazeInFileItem.setText("&Save maze in file");
+
 		generateItem = new MenuItem(gameInMenuBar, SWT.PUSH);
 		generateItem.setText("&Generate maze");
 			
@@ -182,6 +186,69 @@ public class MainWindow extends BasicWindow implements View{
 		possibleMoves(b);
 		
 		/////////////////////////////////////listeners///////////////////////////////////
+		
+		saveMazeInFileItem.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				shell.setEnabled(false);
+				Shell chooseShell = new Shell();
+				chooseShell.setSize(350	, 250);
+				chooseShell.setLayout(new GridLayout(2,false));
+				chooseShell.setText("Choose maze3d");
+				new Label(chooseShell, SWT.None).setText("Choose maze3d to save in file:");
+						
+				setCommand("mazeName".split(" "));
+				String[] mazes = getMazes();
+						
+						
+				List list = new List(chooseShell, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL);    
+				list.setItems(mazes);    
+				list.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+				
+				Group g = new Group(chooseShell, SWT.NONE);
+				g.setLayout(new GridLayout(2, false));
+				g.setCapture(false);
+				
+				Label label = new Label(g, SWT.NONE);
+				label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+				label.setText("File name:");
+				
+				Text fileName = new Text(g, SWT.NONE);
+				fileName.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, false, 1, 1));
+				fileName.setText("");
+				
+				Button saveMaze = new Button(chooseShell, SWT.PUSH);
+				saveMaze.setText("Save maze");
+				saveMaze.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+				
+				saveMaze.addSelectionListener(new SelectionListener() {
+					
+					@Override
+					public void widgetSelected(SelectionEvent arg0) {
+						if(fileName.getText().equals("")==false)
+						{
+							setCommand(("save maze "+MainWindow.this.mazes[list.getFocusIndex()]+" "+fileName.getText()).split(" "));
+						}
+						else
+						{
+							MessageBox message = new MessageBox(chooseShell,SWT.ICON_ERROR | SWT.YES);
+							message.setMessage("Please enter the file name");
+							message.open();
+						}
+					}
+					
+					@Override
+					public void widgetDefaultSelected(SelectionEvent arg0) {}
+				});
+				
+				chooseShell.open();
+				shell.setEnabled(true);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
 		
 		exitItem.addSelectionListener(new SelectionListener() {
 			

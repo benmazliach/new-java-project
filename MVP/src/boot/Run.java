@@ -47,7 +47,7 @@ public class Run {
 			e.printStackTrace();
 		}
 		//Properties pr = new Properties();
-		/*try {
+		try {
 			FileInputStream file = new FileInputStream("properties1.xml");
 			BufferedInputStream bis = new BufferedInputStream(file);
 			XMLDecoder s = new XMLDecoder(bis);
@@ -85,7 +85,7 @@ public class Run {
 		 
 		m.addObserver(p);
 		v.addObserver(p);
-		v.start();*/
+		v.start();
 		/*MyMaze3dGenerator m = new MyMaze3dGenerator(3,3,3);
 		
 		m.getMaze().printMaze();
