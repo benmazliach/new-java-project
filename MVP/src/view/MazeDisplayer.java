@@ -6,10 +6,12 @@ import org.eclipse.swt.widgets.Composite;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 
-public abstract class MazeDisplayer extends Canvas{
+public abstract class MazeDisplayer<T> extends Canvas{
 	
 	protected int[][] mazeData;
-
+	protected MazeCharacter<Position> goalPosition;
+	protected MazeCharacter<Position> character;
+	protected boolean finish;
 	
 	public int[][] getMazeData() {
 		return mazeData;
@@ -24,40 +26,38 @@ public abstract class MazeDisplayer extends Canvas{
 	}
 	
 
-	public abstract void moveUp();
+	public abstract void moveUp(String str);
 
-	public abstract  void moveDown();
+	public abstract  void moveDown(String str);
 
-	public abstract  void moveLeft();
+	public abstract  void moveLeft(String str);
 
-	public  abstract void moveRight();
-	
-	public abstract Position getStartPosition() ;
-	
-	public abstract void setStartPosition(Position startPosition);
+	public  abstract void moveRight(String str);
 
-	public abstract Position getGoalPosition();
+	public abstract T getGoalPosition();
 	
-	public abstract void setGoalPosition(Position goalPosition);
+	public abstract void setGoalPosition(T goalPosition);
 	
-	public abstract void setSection(String section);
+	public abstract T getCharacter();
 	
-	public abstract String getSection();
+	public abstract void setCharacter(T character);
 	
-	public abstract Position getCharacter();
+	public abstract String[] possibleMoves(String str);
 	
-	public abstract void setCharacter(Position character);
+	public abstract void draw(String str);
 	
-	public abstract String[] possibleMoves();
 	
-	public abstract Solution<Position> getSol();
+	
+	public abstract Solution<T> getSol();
 
-	public abstract void setSol(Solution<Position> sol);
+	public abstract void setSol(Solution<T> sol);
 	
-	public abstract boolean isFinish();
+	public boolean isFinish() {
+		return finish;
+	}
 
-	public abstract void setFinish(boolean finish);
-
-	
+	public void setFinish(boolean finish) {
+		this.finish = finish;
+	}
 
 }

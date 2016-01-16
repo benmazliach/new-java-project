@@ -12,33 +12,34 @@ import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 import algorithms.search.State;
 
-public class Maze2D extends MazeDisplayer{
-
-	/*public int characterW;
-	public int characterH;*/
+public class Maze2D<T> extends MazeDisplayer<Position>{
 	
-	private String section;
-	private Position startPosition;
-	private Position goalPosition;
-	private Position character;
 	private Solution<Position> sol;
-	private boolean finish;
+	private Image solutionImage;
+	private Image winImage;
+	private String section;
 	
-	
-	//תנזה להבין איך מפרידים את החייל מהמשחק שכאילו בתוך מחלקה זו לא יהיה את כל החלק של התמונות הספציפיות האלה כדי שהמבוך יהיה יור גינרי
-
-	public Maze2D(Composite parent, int style) {
+	public Maze2D(Composite parent, int style,Image goalI,Image characterI,Image solution,Image win){
 		super(parent, style);
+		
 		setBackground(new Color(null, 255, 255, 255));
 		
+		this.goalPosition = new MazeCharacter<Position>(goalI);
+		this.character = new MazeCharacter<Position>(characterI);
+		this.solutionImage = solution;
+		this.winImage = win;
+	}
+	
+	public void draw(String sectionD)
+	{
 		final Color white=new Color(null, 255, 255, 255);
-		final Color black=new Color(null, 150,150,150);	
+		
+		section = sectionD;
 		
 		addPaintListener(new PaintListener() {
 			
 			@Override
 			public void paintControl(PaintEvent e) {
-				
 				if(mazeData==null)
 				{
 					setBackground(white);
@@ -56,14 +57,13 @@ public class Maze2D extends MazeDisplayer{
 				int w=width/mazeData[0].length;
 			 	int h=height/mazeData.length;
 			 	
-			 	if(character.equals(goalPosition)==true)
+			 	if(character.getCharacter().equals(goalPosition.getCharacter())==true)
 			 	{
-			 		m = new Image(getDisplay(), "resources/Treasure.jpg");
-	        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,0,0,width,height);
+	        		e.gc.drawImage(winImage,0,0,winImage.getBounds().width,winImage.getBounds().height,0,0,width,height);
 	        		finish = true;
 	        		return;
 			 	}
-				
+			 	
 			 	for(int i=0;i<mazeData.length;i++)
 			 	{
 			 		for(int j=0;j<mazeData[i].length;j++){
@@ -77,78 +77,69 @@ public class Maze2D extends MazeDisplayer{
 				        	{
 				        		if(sol!=null)
 				        		{
-				        			if(sol.getSol().contains(new State<Position>(new Position(character.getpX(), i, j))) == true)
+				        			if(sol.getSol().contains(new State<Position>(new Position(character.getCharacter().getpX(), i, j))) == true)
 					        		{
-				        				if(character.equals(new Position(character.getpX(), i, j))==true)
-				        					sol.getSol().remove(new State<Position>(new Position(character.getpX(), i, j)));
-				        				m = new Image(getDisplay(), "resources/coin.jpg");
-						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+				        				if(character.getCharacter().equals(new Position(character.getCharacter().getpX(), i, j))==true)
+				        					sol.getSol().remove(new State<Position>(new Position(character.getCharacter().getpX(), i, j)));
+						        		e.gc.drawImage(solutionImage,0,0,solutionImage.getBounds().width,solutionImage.getBounds().height,x,y,w,h);
 					        		}
 				        		}
-				        		if(character.getpX()==goalPosition.getpX())
+				        		if(character.getCharacter().getpX()==goalPosition.getCharacter().getpX())
 				        		{
-				        			if(j==goalPosition.getpZ()&&i==goalPosition.getpY())
+				        			if(j==goalPosition.getCharacter().getpZ()&&i==goalPosition.getCharacter().getpY())
 						        	{
-				        				m = new Image(getDisplay(), "resources/Treasure.jpg");
-				        				e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+				        				e.gc.drawImage(goalPosition.getImage(),0,0,goalPosition.getImage().getBounds().width,goalPosition.getImage().getBounds().height,x,y,w,h);
 						        	}
 				        		}
-				        		if(j==character.getpZ()&&i==character.getpY())
+				        		if(j==character.getCharacter().getpZ()&&i==character.getCharacter().getpY())
 				        		{
-					        		m = new Image(getDisplay(), "resources/piratesIm.jpg");
-					        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+					        		e.gc.drawImage(character.getImage(),0,0,character.getImage().getBounds().width,character.getImage().getBounds().height,x,y,w,h);
 					        	}
 				        	}
 				        	else if(section.equals("y")==true)
 				        	{
 				        		if(sol!=null)
 				        		{
-				        			if(sol.getSol().contains(new State<Position>(new Position(j, character.getpY(), i))) == true)
+				        			if(sol.getSol().contains(new State<Position>(new Position(j, character.getCharacter().getpY(), i))) == true)
 					        		{
-				        				if(character.equals(new Position(j, character.getpY(), i))==true)
-				        					sol.getSol().remove(new State<Position>(new Position(j, character.getpY(), i)));
-				        				m = new Image(getDisplay(), "resources/coin.jpg");
-				        				e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+				        				if(character.getCharacter().equals(new Position(j, character.getCharacter().getpY(), i))==true)
+				        					sol.getSol().remove(new State<Position>(new Position(j, character.getCharacter().getpY(), i)));
+				        				e.gc.drawImage(solutionImage,0,0,solutionImage.getBounds().width,solutionImage.getBounds().height,x,y,w,h);
 					        		}
 				        		}
-				        		if(character.getpY()==goalPosition.getpY())
+				        		if(character.getCharacter().getpY()==goalPosition.getCharacter().getpY())
 				        		{
-				        			if(j==goalPosition.getpX()&&i==goalPosition.getpZ())
+				        			if(j==goalPosition.getCharacter().getpX()&&i==goalPosition.getCharacter().getpZ())
 						        	{
-				        				m = new Image(getDisplay(), "resources/goalPos.jpg");
-						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+						        		e.gc.drawImage(goalPosition.getImage(),0,0,solutionImage.getBounds().width,solutionImage.getBounds().height,x,y,w,h);
 						        	}
 				        		}
-				        		if(j==character.getpX()&&i==character.getpZ())
+				        		if(j==character.getCharacter().getpX()&&i==character.getCharacter().getpZ())
 					        	{
-					        		m = new Image(getDisplay(), "resources/piratesIm.jpg");
-					        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+					        		e.gc.drawImage(character.getImage(),0,0,character.getImage().getBounds().width,character.getImage().getBounds().height,x,y,w,h);
 					        	}
 				        	}
 				        	else if(section.equals("z")==true)
 				        	{
 				        		if(sol!=null)
 				        		{
-				        			if(sol.getSol().contains(new State<Position>(new Position(j, i, character.getpZ()))) == true)
+				        			if(sol.getSol().contains(new State<Position>(new Position(j, i, character.getCharacter().getpZ()))) == true)
 					        		{
-				        				if(character.equals(new Position(j, i, character.getpZ()))==true)
-				        						sol.getSol().remove(new State<Position>(new Position(j, i, character.getpZ())));
-				        				m = new Image(getDisplay(), "resources/coin.jpg");
-						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+				        				if(character.getCharacter().equals(new Position(j, i, character.getCharacter().getpZ()))==true)
+				        						sol.getSol().remove(new State<Position>(new Position(j, i, character.getCharacter().getpZ())));
+						        		e.gc.drawImage(solutionImage,0,0,solutionImage.getBounds().width,solutionImage.getBounds().height,x,y,w,h);
 					        		}
 				        		}
-				        		if(character.getpZ()==goalPosition.getpZ())
+				        		if(character.getCharacter().getpZ()==goalPosition.getCharacter().getpZ())
 				        		{
-				        			if(j==goalPosition.getpX()&&i==goalPosition.getpY())
+				        			if(j==goalPosition.getCharacter().getpX()&&i==goalPosition.getCharacter().getpY())
 						        	{
-				        				m = new Image(getDisplay(), "resources/goalPos.jpg");
-						        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+						        		e.gc.drawImage(goalPosition.getImage(),0,0,goalPosition.getImage().getBounds().width,goalPosition.getImage().getBounds().height,x,y,w,h);
 						        	}
 				        		}
-				        		if(j==character.getpX()&&i==character.getpY())
+				        		if(j==character.getCharacter().getpX()&&i==character.getCharacter().getpY())
 					        	{
-					        		m = new Image(getDisplay(), "resources/piratesIm.jpg");
-					        		e.gc.drawImage(m,0,0,m.getBounds().width,m.getBounds().height,x,y,w,h);
+					        		e.gc.drawImage(character.getImage(),0,0,character.getImage().getBounds().width,character.getImage().getBounds().height,x,y,w,h);
 					        	}
 				        	}
 				        }
@@ -159,25 +150,25 @@ public class Maze2D extends MazeDisplayer{
 	}
 	
 	@Override
-	public String[] possibleMoves() {
+	public String[] possibleMoves(String section) {
 		String s = "";
 		int w = 0;
 		int h = 0;
 		
-		if(section.equals("y")==true)
+		if(section.equals("y")==true || section.equals(null))
 		{
-			w = character.getpX();
-			h = character.getpZ();
+			w = character.getCharacter().getpX();
+			h = character.getCharacter().getpZ();
 		}
 		else if(section.equals("x")==true)
 		{
-			w = character.getpZ();
-			h = character.getpY();
+			w = character.getCharacter().getpZ();
+			h = character.getCharacter().getpY();
 		}
 		else if(section.equals("z")==true)
 		{
-			w = character.getpX();
-			h = character.getpY();
+			w = character.getCharacter().getpX();
+			h = character.getCharacter().getpY();
 		}
 		
 		if(mazeData[0].length>(w+1))
@@ -196,150 +187,122 @@ public class Maze2D extends MazeDisplayer{
 	}
 	
 	@Override
-	public void moveUp() {
+	public void moveUp(String section) {
 		int w = 0;
 		int h = 0;;
-		if(section.equals("y")==true)
+		if(section.equals("y")==true || section.equals(null))
 		{
-			w = character.getpX();
-			h = character.getpZ();
+			w = character.getCharacter().getpX();
+			h = character.getCharacter().getpZ();
 		}
 		else if(section.equals("x")==true)
 		{
-			w = character.getpZ();
-			h = character.getpY();
+			w = character.getCharacter().getpZ();
+			h = character.getCharacter().getpY();
 		}
 		else if(section.equals("z")==true)
 		{
-			w = character.getpX();
-			h = character.getpY();
+			w = character.getCharacter().getpX();
+			h = character.getCharacter().getpY();
 		}
 		else
 			return;
 		h=h-1;
-		moveCharacter(w, h);
+		moveCharacter(w, h,section);
 	}
 
 	@Override
-	public void moveDown() {
+	public void moveDown(String section) {
 		int w = 0;
 		int h = 0;;
-		if(section.equals("y")==true)
+		if(section.equals("y")==true || section.equals(null))
 		{
-			w = character.getpX();
-			h = character.getpZ();
+			w = character.getCharacter().getpX();
+			h = character.getCharacter().getpZ();
 		}
 		else if(section.equals("x")==true)
 		{
-			w = character.getpZ();
-			h = character.getpY();
+			w = character.getCharacter().getpZ();
+			h = character.getCharacter().getpY();
 		}
 		else if(section.equals("z")==true)
 		{
-			w = character.getpX();
-			h = character.getpY();
+			w = character.getCharacter().getpX();
+			h = character.getCharacter().getpY();
 		}
 		else
 			return;
 		h=h+1;
-		moveCharacter(w, h);
+		moveCharacter(w, h,section);
 	}
 
 	@Override
-	public void moveLeft() {
+	public void moveLeft(String section) {
 		int w = 0;
 		int h = 0;;
-		if(section.equals("y")==true)
+		if(section.equals("y")==true || section.equals(null))
 		{
-			w = character.getpX();
-			h = character.getpZ();
+			w = character.getCharacter().getpX();
+			h = character.getCharacter().getpZ();
 		}
 		else if(section.equals("x")==true)
 		{
-			w = character.getpZ();
-			h = character.getpY();
+			w = character.getCharacter().getpZ();
+			h = character.getCharacter().getpY();
 		}
 		else if(section.equals("z")==true)
 		{
-			w = character.getpX();
-			h = character.getpY();
+			w = character.getCharacter().getpX();
+			h = character.getCharacter().getpY();
 		}
 		else
 			return;
 		w=w-1;
-		moveCharacter(w, h);
+		moveCharacter(w, h,section);
 	}
 
 	@Override
-	public void moveRight() {
+	public void moveRight(String section) {
 		int w = 0;
 		int h = 0;;
-		if(section.equals("y")==true)
+		if(section.equals("y")==true || section.equals(null))
 		{
-			w = character.getpX();
-			h = character.getpZ();
+			w = character.getCharacter().getpX();
+			h = character.getCharacter().getpZ();
 		}
 		else if(section.equals("x")==true)
 		{
-			w = character.getpZ();
-			h = character.getpY();
+			w = character.getCharacter().getpZ();
+			h = character.getCharacter().getpY();
 		}
 		else if(section.equals("z")==true)
 		{
-			w = character.getpX();
-			h = character.getpY();
+			w = character.getCharacter().getpX();
+			h = character.getCharacter().getpY();
 		}
 		else
 			return;
 		w=w+1;
-		moveCharacter(w, h);
-	}
-
-	public String getSection() {
-		return section;
-	}
-
-	public void setSection(String section) {
-		this.section = section;
+		moveCharacter(w, h,section);
 	}
 	
-	@Override
-	public Position getStartPosition() {
-		return startPosition;
-	}
-
-	@Override
-	public void setStartPosition(Position startPosition) {
-		this.startPosition = new Position(startPosition.getpX(), startPosition.getpY(), startPosition.getpZ());
-	}
-
-	@Override
-	public Position getGoalPosition() {
-		return this.goalPosition;
-	}
-
-	@Override
-	public void setGoalPosition(Position goalPosition) {
-		this.goalPosition = new Position(goalPosition.getpX(), goalPosition.getpY(), goalPosition.getpZ());
-	}
-	
-	private void moveCharacter(int w,int h){
+	private void moveCharacter(int w,int h,String section){
 		if(w>=0 && w<mazeData[0].length && h>=0 && h<mazeData.length && mazeData[h][w]==0){
 			{
-				if(section.equals("y")==true)
+				if(section.equals("y")==true || section.equals(null))
 				{
-					character.setpX(w);
-					character.setpZ(h);
+					character.getCharacter().setpX(w);
+					character.getCharacter().setpZ(h);
 				}
 				else if(section.equals("x")==true)
 				{
-					character.setpZ(w);
-					character.setpY(h);
+					character.getCharacter().setpZ(w);
+					character.getCharacter().setpY(h);
 				}
 				else if(section.equals("z")==true)
 				{
-					character.setpX(w);
-					character.setpY(h);
+					character.getCharacter().setpX(w);
+					character.getCharacter().setpY(h);
 				}
 				getDisplay().syncExec(new Runnable() {
 				
@@ -352,12 +315,22 @@ public class Maze2D extends MazeDisplayer{
 		}
 	}
 	
+	@Override
+	public Position getGoalPosition() {
+		return this.goalPosition.getCharacter();
+	}
+
+	@Override
+	public void setGoalPosition(Position goalPosition) {
+		this.goalPosition.setCharacter(new Position(goalPosition.getpX(), goalPosition.getpY(), goalPosition.getpZ()));
+	}
+	
 	public Position getCharacter() {
-		return character;
+		return character.getCharacter();
 	}
 
 	public void setCharacter(Position character) {
-		this.character = new Position(character.getpX(), character.getpY(), character.getpZ());
+		this.character.setCharacter(new Position(character.getpX(), character.getpY(), character.getpZ()));
 	}
 	
 	public Solution<Position> getSol() {
@@ -366,14 +339,6 @@ public class Maze2D extends MazeDisplayer{
 
 	public void setSol(Solution<Position> sol) {
 		this.sol = sol;
-	}
-	
-	public boolean isFinish() {
-		return finish;
-	}
-
-	public void setFinish(boolean finish) {
-		this.finish = finish;
 	}
 
 }

@@ -46,10 +46,11 @@ public class MainWindow extends BasicWindow implements View{
 	private String[] args;
 	private String[] mazes;
 	private String nameCurrentMaze;
-	private MazeDisplayer mazeDisplayer;
+	private MazeDisplayer<Position> mazeDisplayer;
 	private Maze3d maze;
 	private Group arrowsGroup;
 	private String solveAlg;
+	private String section;
 	
 	public MainWindow(String title, int x, int y) {
 		super(title, x, y);
@@ -125,8 +126,11 @@ public class MainWindow extends BasicWindow implements View{
 		displayMazeButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
 		
 		//MazeDisplayer
-		mazeDisplayer = new Maze2D(shell, SWT.BORDER);
+		//mazeDisplayer = new Maze2D(shell, SWT.BORDER);
+		mazeDisplayer = new Maze2D(shell, SWT.BORDER,new Image(display, "resources/goalPos.jpg"),
+				new Image(display, "resources/piratesIm.jpg"),new Image(display, "resources/coin.jpg"),new Image(display, "resources/Treasure.jpg"));
 		mazeDisplayer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 4));
+		mazeDisplayer.draw(null);
 		
 		//display solution maze button
 		Button solveButton=new Button(buttonsGroup, SWT.PUSH);
@@ -437,7 +441,7 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetSelected(SelectionEvent arg0) {
 				if(mazeDisplayer.getMazeData()!=null && mazeDisplayer.isFinish()==false)
 				{
-					mazeDisplayer.moveUp();
+					mazeDisplayer.moveUp(section);
 					possibleMoves(b);
 				}
 			}
@@ -467,7 +471,7 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetSelected(SelectionEvent arg0) {
 				if(mazeDisplayer.getMazeData()!=null && mazeDisplayer.isFinish()==false)
 				{
-					mazeDisplayer.moveLeft();
+					mazeDisplayer.moveLeft(section);
 					possibleMoves(b);
 				}
 			}
@@ -482,7 +486,7 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetSelected(SelectionEvent arg0) {
 				if(mazeDisplayer.getMazeData()!=null && mazeDisplayer.isFinish()==false)
 				{
-					mazeDisplayer.moveRight();					
+					mazeDisplayer.moveRight(section);					
 					possibleMoves(b);
 				}
 			}
@@ -497,7 +501,7 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetSelected(SelectionEvent arg0) {
 				if(mazeDisplayer.getMazeData()!=null && mazeDisplayer.isFinish()==false)
 				{
-					mazeDisplayer.moveDown();
+					mazeDisplayer.moveDown(section);
 					possibleMoves(b);
 				}
 			}
@@ -527,8 +531,8 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetSelected(SelectionEvent arg0) {
 				if(nameCurrentMaze!=null)
 				{
-					mazeDisplayer.setSection("x");
-					setCommand(("display cross section by X "+mazeDisplayer.getCharacter().getpX()+" for "+nameCurrentMaze).split(" "));
+					section = "x";
+					setCommand(("display cross section by X "+((Position)mazeDisplayer.getCharacter()).getpX()+" for "+nameCurrentMaze).split(" "));
 					possibleMoves(b);
 				}
 			}
@@ -543,8 +547,8 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetSelected(SelectionEvent arg0) {
 				if(nameCurrentMaze!=null)
 				{
-					mazeDisplayer.setSection("y");
-					setCommand(("display cross section by Y "+mazeDisplayer.getCharacter().getpY()+" for "+nameCurrentMaze).split(" "));
+					section = "y";
+					setCommand(("display cross section by Y "+((Position)mazeDisplayer.getCharacter()).getpY()+" for "+nameCurrentMaze).split(" "));
 					possibleMoves(b);
 					}
 				}
@@ -559,8 +563,8 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetSelected(SelectionEvent arg0) {
 				if(nameCurrentMaze!=null)
 				{
-					mazeDisplayer.setSection("z");
-					setCommand(("display cross section by Z "+mazeDisplayer.getCharacter().getpZ()+" for "+nameCurrentMaze).split(" "));
+					section = "z";
+					setCommand(("display cross section by Z "+((Position)mazeDisplayer.getCharacter()).getpZ()+" for "+nameCurrentMaze).split(" "));
 					possibleMoves(b);
 				}
 			}
@@ -685,7 +689,7 @@ public class MainWindow extends BasicWindow implements View{
 					@Override
 					public void widgetSelected(SelectionEvent arg0) {
 						shell.setEnabled(true);
-						mazeDisplayer.setSection("y");
+						section = "y";
 						mazeDisplayer.setSol(null);
 						mazeDisplayer.setFinish(false);
 						nameCurrentMaze = mazes[list.getFocusIndex()];
@@ -719,10 +723,11 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetSelected(SelectionEvent arg0) {
 				if(nameCurrentMaze!=null)
 				{
-					maze.setStartPosition(mazeDisplayer.getCharacter());
+					Position temp = maze.getStartPosition();
+					maze.setStartPosition((Position)mazeDisplayer.getCharacter());
 					setCommand("solveAlgorithm".split(" "));
 					setCommand(("solve "+nameCurrentMaze+" "+solveAlg).split(" "));
-					maze.setStartPosition(mazeDisplayer.getStartPosition());
+					maze.setStartPosition(temp);
 					setCommand(("display solution "+nameCurrentMaze).split(" "));
 					timer=new Timer();
 					task=new TimerTask() {
@@ -756,11 +761,12 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetSelected(SelectionEvent arg0) {
 				if(nameCurrentMaze!=null)
 				{
-					maze.setStartPosition(mazeDisplayer.getCharacter());
+					Position temp = maze.getStartPosition();
+					maze.setStartPosition((Position)mazeDisplayer.getCharacter());
 					setCommand("solveAlgorithm".split(" "));
 					setCommand(("solve "+nameCurrentMaze+" "+solveAlg).split(" "));
 					setCommand(("display solution "+nameCurrentMaze).split(" "));
-					maze.setStartPosition(mazeDisplayer.getStartPosition());
+					maze.setStartPosition(temp);
 				}
 				else
 				{
@@ -780,9 +786,10 @@ public class MainWindow extends BasicWindow implements View{
 			public void widgetSelected(SelectionEvent arg0) {
 				if(mazeDisplayer.getMazeData()!=null)
 				{
-					maze.setStartPosition(mazeDisplayer.getCharacter());
+					Position temp = maze.getStartPosition();
+					maze.setStartPosition((Position)mazeDisplayer.getCharacter());
 					setCommand(("hint "+nameCurrentMaze).split(" "));
-					maze.setStartPosition(mazeDisplayer.getStartPosition());
+					maze.setStartPosition(temp);
 				}
 			}
 			
@@ -801,13 +808,13 @@ public class MainWindow extends BasicWindow implements View{
 				{
 					switch(arg0.keyCode)
 					{
-					case SWT.ARROW_UP: mazeDisplayer.moveUp();
+					case SWT.ARROW_UP: mazeDisplayer.moveUp(section);
 							break;
-					case SWT.ARROW_DOWN: mazeDisplayer.moveDown();
+					case SWT.ARROW_DOWN: mazeDisplayer.moveDown(section);
 							break;
-					case SWT.ARROW_LEFT: mazeDisplayer.moveLeft();
+					case SWT.ARROW_LEFT: mazeDisplayer.moveLeft(section);
 							break;
-					case SWT.ARROW_RIGHT: mazeDisplayer.moveRight();
+					case SWT.ARROW_RIGHT: mazeDisplayer.moveRight(section);
 							break;
 					case SWT.PAGE_UP: movePageUp();
 							break;
@@ -858,38 +865,38 @@ public class MainWindow extends BasicWindow implements View{
 	
 	public void movePageUp()
 	{
-		if(mazeDisplayer.getSection().equals("y")==true)
+		if(section.equals("y")==true)
 		{
-			int pY = mazeDisplayer.getCharacter().getpY()+1;
+			int pY = ((Position)mazeDisplayer.getCharacter()).getpY()+1;
 			if(maze.getYSize()>pY)
 			{
-				if(maze.returnValue(mazeDisplayer.getCharacter().getpX(), pY, mazeDisplayer.getCharacter().getpZ())==0)
+				if(maze.returnValue(((Position)mazeDisplayer.getCharacter()).getpX(), pY, ((Position)mazeDisplayer.getCharacter()).getpZ())==0)
 				{
-					mazeDisplayer.getCharacter().setpY(pY);
+					((Position)mazeDisplayer.getCharacter()).setpY(pY);
 					setCommand(("display cross section by Y "+pY+" for "+nameCurrentMaze).split(" "));
 				}
 			}
 		}
-		else if(mazeDisplayer.getSection().equals("x")==true)
+		else if(section.equals("x")==true)
 		{
-			int pX = mazeDisplayer.getCharacter().getpX()+1;
+			int pX = ((Position)mazeDisplayer.getCharacter()).getpX()+1;
 			if(maze.getYSize()>pX)
 			{
-				if(maze.returnValue(pX, mazeDisplayer.getCharacter().getpY(), mazeDisplayer.getCharacter().getpZ())==0)
+				if(maze.returnValue(pX, ((Position)mazeDisplayer.getCharacter()).getpY(), ((Position)mazeDisplayer.getCharacter()).getpZ())==0)
 				{
-					mazeDisplayer.getCharacter().setpX(pX);
+					((Position)mazeDisplayer.getCharacter()).setpX(pX);
 					setCommand(("display cross section by X "+pX+" for "+nameCurrentMaze).split(" "));
 				}
 			}
 		}
-		else if(mazeDisplayer.getSection().equals("z")==true)
+		if(section.equals("z")==true)
 		{
-			int pZ = mazeDisplayer.getCharacter().getpZ()+1;
+			int pZ = ((Position)mazeDisplayer.getCharacter()).getpZ()+1;
 			if(maze.getYSize()>pZ)
 			{
-				if(maze.returnValue(mazeDisplayer.getCharacter().getpX(), mazeDisplayer.getCharacter().getpY(), pZ)==0)
+				if(maze.returnValue(((Position)mazeDisplayer.getCharacter()).getpX(), ((Position)mazeDisplayer.getCharacter()).getpY(), pZ)==0)
 				{
-					mazeDisplayer.getCharacter().setpZ(pZ);
+					((Position)mazeDisplayer.getCharacter()).setpZ(pZ);
 					setCommand(("display cross section by Z "+pZ+" for "+nameCurrentMaze).split(" "));
 				}
 			}
@@ -898,38 +905,38 @@ public class MainWindow extends BasicWindow implements View{
 	
 	public void movePageDown()
 	{
-		if(mazeDisplayer.getSection().equals("y")==true)
+		if(section.equals("y")==true)
 		{
-			int pY = mazeDisplayer.getCharacter().getpY()-1;
+			int pY = ((Position)mazeDisplayer.getCharacter()).getpY()-1;
 			if(pY>=0)
 			{
-				if(maze.returnValue(mazeDisplayer.getCharacter().getpX(), pY, mazeDisplayer.getCharacter().getpZ())==0)
+				if(maze.returnValue(((Position)mazeDisplayer.getCharacter()).getpX(), pY, ((Position)mazeDisplayer.getCharacter()).getpZ())==0)
 				{
-					mazeDisplayer.getCharacter().setpY(pY);
+					((Position)mazeDisplayer.getCharacter()).setpY(pY);
 					setCommand(("display cross section by Y "+pY+" for "+nameCurrentMaze).split(" "));
 				}
 			}
 		}
-		else if(mazeDisplayer.getSection().equals("x")==true)
+		else if(section.equals("x")==true)
 		{
-			int pX = mazeDisplayer.getCharacter().getpX()-1;
+			int pX = ((Position)mazeDisplayer.getCharacter()).getpX()-1;
 			if(pX>=0)
 			{
-				if(maze.returnValue(pX, mazeDisplayer.getCharacter().getpY(), mazeDisplayer.getCharacter().getpZ())==0)
+				if(maze.returnValue(pX, ((Position)mazeDisplayer.getCharacter()).getpY(), ((Position)mazeDisplayer.getCharacter()).getpZ())==0)
 				{
-					mazeDisplayer.getCharacter().setpX(pX);
+					((Position)mazeDisplayer.getCharacter()).setpX(pX);
 					setCommand(("display cross section by X "+pX+" for "+nameCurrentMaze).split(" "));
 				}
 			}
 		}
-		else if(mazeDisplayer.getSection().equals("z")==true)
+		if(section.equals("z")==true)
 		{
-			int pZ = mazeDisplayer.getCharacter().getpZ()-1;
+			int pZ = ((Position)mazeDisplayer.getCharacter()).getpZ()-1;
 			if(pZ>=0)
 			{
-				if(maze.returnValue(mazeDisplayer.getCharacter().getpX(), mazeDisplayer.getCharacter().getpY(), pZ)==0)
+				if(maze.returnValue(((Position)mazeDisplayer.getCharacter()).getpX(), ((Position)mazeDisplayer.getCharacter()).getpY(), pZ)==0)
 				{
-					mazeDisplayer.getCharacter().setpZ(pZ);
+					((Position)mazeDisplayer.getCharacter()).setpZ(pZ);
 					setCommand(("display cross section by Z "+pZ+" for "+nameCurrentMaze).split(" "));
 				}
 			}
@@ -950,7 +957,7 @@ public class MainWindow extends BasicWindow implements View{
 				
 				@Override
 				public void run() {
-					System.out.println(s);
+					//System.out.println(s);
 					if(s.equals("Exit")==false && s.contains("solution")==false && s.contains("Solution")==false)
 					{
 						MessageBox messageBox = new MessageBox(shell, SWT.ICON_INFORMATION| SWT.YES);
@@ -969,7 +976,9 @@ public class MainWindow extends BasicWindow implements View{
 		{
 			temp.add(sol.getSol().get(i));
 		}
+		
 		mazeDisplayer.setSol(new Solution<Position>(temp));
+		mazeDisplayer.draw(section);
 		mazeDisplayer.redraw();
 	}
 	
@@ -987,9 +996,9 @@ public class MainWindow extends BasicWindow implements View{
 	public void displayMaze3d(Maze3d maze, String name) {
 		this.setMaze(maze);
 		mazeDisplayer.setCharacter(maze.getStartPosition());
-		mazeDisplayer.setStartPosition(maze.getStartPosition());
 		mazeDisplayer.setGoalPosition(maze.getGoalPosition());
-		mazeDisplayer.setMazeData(maze.getCrossSectionByY(mazeDisplayer.getStartPosition().getpY()));
+		mazeDisplayer.setMazeData(maze.getCrossSectionByY(((Position)mazeDisplayer.getCharacter()).getpY()));
+		mazeDisplayer.draw(section);
 		mazeDisplayer.redraw();
 	}
 
@@ -1015,6 +1024,7 @@ public class MainWindow extends BasicWindow implements View{
 	@Override
 	public void displayCrossSection(int[][] arr, String sectionType, String name, String section) {
 		mazeDisplayer.setMazeData(arr);
+		mazeDisplayer.draw(this.section);
 		mazeDisplayer.redraw();
 	}
 
@@ -1030,12 +1040,11 @@ public class MainWindow extends BasicWindow implements View{
 	
 	public void possibleMoves(Button[] b)
 	{
-		Image image = null;
 		String[] possibleMoves = null;
 		
 		if(mazeDisplayer.getMazeData()!=null)
 		{
-			possibleMoves = mazeDisplayer.possibleMoves();
+			possibleMoves = mazeDisplayer.possibleMoves(section);
 			String str = "";
 			
 			for (String string : possibleMoves) {
@@ -1047,32 +1056,32 @@ public class MainWindow extends BasicWindow implements View{
 			int up = 1;
 			int down = 1;
 			int maxSection = 0;
-			if(mazeDisplayer.getSection().equals("y")==true)
+			if(section.equals("y")==true)
 			{
-				h = mazeDisplayer.getCharacter().getpY();
+				h = ((Position)mazeDisplayer.getCharacter()).getpY();
 				maxSection = maze.getYSize();
 				if(h+1<maxSection)
-					up = maze.returnValue(mazeDisplayer.getCharacter().getpX(), h+1, mazeDisplayer.getCharacter().getpZ());
+					up = maze.returnValue(((Position)mazeDisplayer.getCharacter()).getpX(), h+1, ((Position)mazeDisplayer.getCharacter()).getpZ());
 				if(h-1>=0)
-					down = maze.returnValue(mazeDisplayer.getCharacter().getpX(), h-1, mazeDisplayer.getCharacter().getpZ());
+					down = maze.returnValue(((Position)mazeDisplayer.getCharacter()).getpX(), h-1, ((Position)mazeDisplayer.getCharacter()).getpZ());
 			}
-			else if(mazeDisplayer.getSection().equals("x")==true)
+			else if(section.equals("x")==true)
 			{
-				h = mazeDisplayer.getCharacter().getpX();
+				h = ((Position)mazeDisplayer.getCharacter()).getpX();
 				maxSection = maze.getXSize();
 				if(h+1<maxSection)
-					up = maze.returnValue(h+1,mazeDisplayer.getCharacter().getpY(),  mazeDisplayer.getCharacter().getpZ());
+					up = maze.returnValue(h+1,((Position)mazeDisplayer.getCharacter()).getpY(),  ((Position)mazeDisplayer.getCharacter()).getpZ());
 				if(h-1>=0)
-					down = maze.returnValue(h-1, mazeDisplayer.getCharacter().getpY(), mazeDisplayer.getCharacter().getpZ());
+					down = maze.returnValue(h-1, ((Position)mazeDisplayer.getCharacter()).getpY(), ((Position)mazeDisplayer.getCharacter()).getpZ());
 			}
-			else if(mazeDisplayer.getSection().equals("z")==true)
+			else if(section.equals("z")==true)
 			{
-				h = mazeDisplayer.getCharacter().getpZ();
+				h = ((Position)mazeDisplayer.getCharacter()).getpZ();
 				maxSection = maze.getZSize();
 				if(h+1<maxSection)
-					up = maze.returnValue(mazeDisplayer.getCharacter().getpX(), mazeDisplayer.getCharacter().getpY(), h+1);
+					up = maze.returnValue(((Position)mazeDisplayer.getCharacter()).getpX(), ((Position)mazeDisplayer.getCharacter()).getpY(), h+1);
 				if(h-1>=0)
-					down = maze.returnValue(mazeDisplayer.getCharacter().getpX(), mazeDisplayer.getCharacter().getpY(), h-1);
+					down = maze.returnValue(((Position)mazeDisplayer.getCharacter()).getpX(), ((Position)mazeDisplayer.getCharacter()).getpY(), h-1);
 			}
 			else
 				return;
@@ -1085,53 +1094,29 @@ public class MainWindow extends BasicWindow implements View{
 			possibleMoves = str.split(" ");
 		}
 		
-		image = new Image(display, "resources/backward1.png");
-		b[0].setImage(image);
-		image= new Image(display, "resources/UP1.png");
-		b[1].setImage(image);
-		image= new Image(display, "resources/left1.png");
-		b[2].setImage(image);
-		image= new Image(display, "resources/right1.png");
-		b[3].setImage(image);
-		image = new Image(display, "resources/forward1.png");
-		b[4].setImage(image);
-		image= new Image(display, "resources/DOWN1.png");
-		b[5].setImage(image);
+		b[0].setImage(new Image(display, "resources/backward1.png"));
+		b[1].setImage(new Image(display, "resources/UP1.png"));
+		b[2].setImage(new Image(display, "resources/left1.png"));
+		b[3].setImage(new Image(display, "resources/right1.png"));
+		b[4].setImage(new Image(display, "resources/forward1.png"));
+		b[5].setImage(new Image(display, "resources/DOWN1.png"));
 		
 		if(possibleMoves!=null && mazeDisplayer.isFinish()==false)
 		{
 			for(int i=0;i<possibleMoves.length;i++)
 			{
 				if(possibleMoves[i].equals("Backward")==true)
-				{
-					image = new Image(display, "resources/backward2.png");
-					b[0].setImage(image);
-				}
+					b[0].setImage(new Image(display, "resources/backward2.png"));
 				else if(possibleMoves[i].equals("Up")==true)
-				{
-					image= new Image(display, "resources/UP2.png");
-					b[1].setImage(image);
-				}
+					b[1].setImage(new Image(display, "resources/UP2.png"));
 				else if(possibleMoves[i].equals("Left")==true)
-				{
-					image= new Image(display, "resources/left2.png");
-					b[2].setImage(image);
-				}
+					b[2].setImage(new Image(display, "resources/left2.png"));
 				else if(possibleMoves[i].equals("Right")==true)
-				{
-					image= new Image(display, "resources/right2.png");
-					b[3].setImage(image);
-				}
+					b[3].setImage(new Image(display, "resources/right2.png"));
 				else if(possibleMoves[i].equals("Forward")==true)
-				{
-					image = new Image(display, "resources/forward2.png");
-					b[4].setImage(image);
-				}
+					b[4].setImage(new Image(display, "resources/forward2.png"));
 				else if(possibleMoves[i].equals("Down")==true)
-				{
-					image= new Image(display, "resources/DOWN2.png");
-					b[5].setImage(image);
-				}
+					b[5].setImage(new Image(display, "resources/DOWN2.png"));
 			}
 		}
 		
@@ -1156,28 +1141,48 @@ public class MainWindow extends BasicWindow implements View{
 	}
 
 	private void Walk(Solution<Position> sol){
-		System.out.println(sol.getSol().size());
 		if(sol.getSol().size()>0)
 		{
-			int x = sol.getSol().get(0).getState().getpX();
-			int y = sol.getSol().get(0).getState().getpY();
-			int z = sol.getSol().get(0).getState().getpZ();
+			//y
+			int w1 = sol.getSol().get(0).getState().getpX();
+			int f1 = sol.getSol().get(0).getState().getpY();
+			int h1 = sol.getSol().get(0).getState().getpZ();
+			int w2 = ((Position)mazeDisplayer.getCharacter()).getpX();
+			int f2 = ((Position)mazeDisplayer.getCharacter()).getpY();
+			int h2 = ((Position)mazeDisplayer.getCharacter()).getpZ();
 			
-			if(mazeDisplayer.getSection().equals("y"))
+			if(section.equals("x")==true)
 			{
-				if(mazeDisplayer.getCharacter().getpX()>x)
-					mazeDisplayer.moveLeft();
-				else if(mazeDisplayer.getCharacter().getpX()<x)
-					mazeDisplayer.moveRight();
-				else if(mazeDisplayer.getCharacter().getpZ()>z)
-					mazeDisplayer.moveUp();
-				else if(mazeDisplayer.getCharacter().getpZ()<z)
-					mazeDisplayer.moveDown();
-				else if(mazeDisplayer.getCharacter().getpY()>y)
-					movePageDown();
-				else if(mazeDisplayer.getCharacter().getpY()<y)
-					movePageUp();
+				f1 = sol.getSol().get(0).getState().getpX();
+				h1 = sol.getSol().get(0).getState().getpY();
+				w1 = sol.getSol().get(0).getState().getpZ();
+				w2 = ((Position)mazeDisplayer.getCharacter()).getpZ();
+				f2 = ((Position)mazeDisplayer.getCharacter()).getpX();
+				h2 = ((Position)mazeDisplayer.getCharacter()).getpY();
 			}
+			else if(section.equals("z")==true)
+			{
+				w1 = sol.getSol().get(0).getState().getpX();
+				h1 = sol.getSol().get(0).getState().getpY();
+				f1 = sol.getSol().get(0).getState().getpZ();
+				w2 = ((Position)mazeDisplayer.getCharacter()).getpX();
+				f2 = ((Position)mazeDisplayer.getCharacter()).getpZ();
+				h2 = ((Position)mazeDisplayer.getCharacter()).getpY();
+			}
+			
+			if(w2>w1)
+				mazeDisplayer.moveLeft(this.section);
+			else if(w2<w1)
+				mazeDisplayer.moveRight(this.section);
+			else if(h2>h1)
+				mazeDisplayer.moveUp(this.section);
+			else if(h2<h1)
+				mazeDisplayer.moveDown(this.section);
+			else if(f2>f1)
+				movePageDown();
+			else if(f2<f1)
+				movePageUp();
+			
 			sol.getSol().remove(0);
 		}
 		else
