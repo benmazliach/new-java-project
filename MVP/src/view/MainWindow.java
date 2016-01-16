@@ -935,12 +935,6 @@ public class MainWindow extends BasicWindow implements View{
 			}
 		}
 	}
-
-	/*maze.setStartPosition(mazeDisplayer.getCharacter());
-	setCommand("solveAlgorithm".split(" "));
-	setCommand(("solve "+nameCurrentMaze+" "+solveAlg).split(" "));
-	maze.setStartPosition(mazeDisplayer.getStartPosition());
-	setCommand(("display solution "+nameCurrentMaze).split(" "));*/
 	
 	@Override
 	public void displayString(String s) {
@@ -957,7 +951,7 @@ public class MainWindow extends BasicWindow implements View{
 				@Override
 				public void run() {
 					System.out.println(s);
-					if(s.equals("Exit")==false)
+					if(s.equals("Exit")==false && s.contains("solution")==false && s.contains("Solution")==false)
 					{
 						MessageBox messageBox = new MessageBox(shell, SWT.ICON_INFORMATION| SWT.YES);
 						messageBox.setMessage(s);
