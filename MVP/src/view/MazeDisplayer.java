@@ -6,10 +6,6 @@ import org.eclipse.swt.widgets.Composite;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 
-
-// this is (1) the common type, and (2) a type of widget
-// (1) we can switch among different MazeDisplayers
-// (2) other programmers can use it naturally
 public abstract class MazeDisplayer extends Canvas{
 	
 	protected int[][] mazeData;
@@ -43,8 +39,6 @@ public abstract class MazeDisplayer extends Canvas{
 	public abstract Position getGoalPosition();
 	
 	public abstract void setGoalPosition(Position goalPosition);
-
-	public abstract void setCharacterPosition(int row, int col);
 	
 	public abstract void setSection(String section);
 	

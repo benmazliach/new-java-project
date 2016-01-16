@@ -28,8 +28,6 @@ public interface Model {
 	public boolean checkSolutionHash(String name);
 	public void saveMaze3dMapZip();
 	public void loadMaze3dMapZip();
-	void generateMaze3d();
-	void solveMaze();
 	public String[] getNamesMaze3d();
 	public int getNumOfStopToGoal(String name);
 	public void setProperties(Properties properties);

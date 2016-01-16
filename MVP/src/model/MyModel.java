@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -36,7 +37,7 @@ import io.MyDecompressorInputStream;
 import presenter.Properties;
 
 
-public class MyModel extends Observable implements Model
+public class MyModel extends Observable implements Model,Observer
 {
 	private HashMap<String, Maze3d> mazeInFile;
 	private HashMap<String, Maze3d> maze3dMap;
@@ -46,6 +47,8 @@ public class MyModel extends Observable implements Model
 	private int[][] cross;
 	private int index;
 	private Properties properties;
+	private GenerateMaze generateMazeOb;
+	private SolveMaze solveMazeOb;
 
 	public MyModel(Properties properties) {
 		this.mazeInFile = new HashMap<String, Maze3d>();
@@ -53,11 +56,34 @@ public class MyModel extends Observable implements Model
 		this.solutionMap = new HashMap<String, Solution<Position>>();
 		this.mazeSolMap = new HashMap<Maze3d, Solution<Position>>();
 		this.properties = properties;
-		cross = null;
+		this.cross = null;
 		loadMaze3dMapZip();
-		this.threadpool = Executors.newFixedThreadPool(properties.getNumOfThreads());  
-		generateMaze3d();
-		solveMaze();
+		this.threadpool = Executors.newFixedThreadPool(properties.getNumOfThreads());
+		
+		generateMaze3d(properties.getXSize(),properties.getYSize(),
+				properties.getZSize(),properties.getAlgorithmGenerateName(),properties.getMazeName());
+
+		solveMaze(("solve "+properties.getMazeName()+" "+properties.getAlgorithmSearchName()).split(" ")
+				, maze3dMap.get(properties.getMazeName()));
+	}
+	
+
+	@Override
+	public void update(Observable o, Object arg1) {
+		if(o==generateMazeOb)
+		{
+			if(arg1.getClass().getName().equals("java.lang.String"))
+			{
+				notifyString((String)arg1);
+			}
+		}
+		if(o==solveMazeOb)
+		{
+			if(arg1.getClass().getName().equals("java.lang.String"))
+			{
+				notifyString((String)arg1);
+			}
+		}
 	}
 	
 	@Override
@@ -66,62 +92,30 @@ public class MyModel extends Observable implements Model
 			notifyString("Maze "+name+" is alredy exists");
 		else
 		{
-			Callable<Maze3d> call =  new Callable<Maze3d>() {
-				@Override
-				public Maze3d call() {
-					Maze3dGenerator mg = null;
-					if(generate.equals("MyMaze3dGenerator")==true)
-						mg = new MyMaze3dGenerator(x,y,z);
-					else
-						mg = new SimpleMaze3dGenerator(x,y,z);
-					setMaze3d(mg.getMaze(), name);
-					return mg.getMaze();
-				}
-			};
-			threadpool.submit(call);
+			generateMazeOb = new GenerateMaze();
+			generateMazeOb.addObserver(this);
+			Future<Maze3d> future = threadpool.submit(generateMazeOb.generate(x, y, z, generate, name));
+			
+			try {
+				setMaze3d(future.get(),name);
+			} catch (InterruptedException | ExecutionException e) {
+				notifyString(e.getMessage());
+			}
 		}
 	}
 	
-	@Override
-	public void generateMaze3d() {
-		Callable<Maze3d> call =  new Callable<Maze3d>() {
-			@Override
-			public Maze3d call() {
-				Maze3dGenerator mg = null;
-				if(properties.getAlgorithmGenerateName().equals("MyMaze3dGenerator")==true)
-					mg = new MyMaze3dGenerator(properties.getXSize(),properties.getYSize(),properties.getZSize());
-				else
-					mg = new SimpleMaze3dGenerator(properties.getXSize(),properties.getYSize(),properties.getZSize());
-				setMaze3d(mg.getMaze(),properties.getMazeName());
-				return mg.getMaze();
-			}
-		};
-		threadpool.submit(call);
-	}
-	
-	public int[][][] getArrayMaze3d(String name)
-	{
-		return maze3dMap.get(name).getMaze();
-	}
-	
-	public Maze3d getMaze3d(String name)
-	{
-		return maze3dMap.get(name);
-	}
-	
-	public boolean checkMazeHash(String name){
-		return maze3dMap.containsKey(name);
-	}
 	public void setMaze3d(Maze3d maze,String name) {
 		if(maze3dMap.containsKey(name)==false)
 		{
 			maze3dMap.put(name, maze);
-			notifyString("Maze "+name+" is ready");
+			this.setChanged();
+			notifyObservers();
 		}
 		else
 		{
 			maze3dMap.replace(name, maze);
-			notifyString("Maze "+name+" is ready");
+			this.setChanged();
+			notifyObservers();
 		}
 	}
 	
@@ -171,6 +165,7 @@ public class MyModel extends Observable implements Model
 		try {
 			outFile = new MyCompressorOutputStream(new FileOutputStream(fileName));
 			outFile.write(maze.toByteArray());
+			System.out.println(fileName);
 			mazeInFile.put(fileName, maze);
 			outFile.close();
 			notifyString("file "+fileName+" is ready");
@@ -240,120 +235,38 @@ public class MyModel extends Observable implements Model
 	
 	@Override
 	public void solveMaze(String[] args, Maze3d maze) {
-		//כאן זה מאותה סיבה שמקודם
-		//אם יש פתרון ונרצה לייצר פתרון חדש בגלל תזוזת השחקן ע"י המשתמש
-		/*if(mazeSolMap.containsKey(maze)==true)
+		if(mazeSolMap.containsKey(maze)==true)
 			notifyString("Solution for maze "+args[1]+" is alredy exists");
-		else*/
+		else
 		{
-		Callable<Solution<Position>> call = new Callable<Solution<Position>>() {
-			@Override
-			public Solution<Position> call() {
-				Searchable<Position> s = new Maze3dDomain(maze);
-				BFS<Position> solve = null;
-				Solution<Position> sol = null;
-				if(args.length>=3 && args.length<5)
-				{
-					if(args[2].equals("BFS")==true)
-					{
-						solve = new BFS<Position>(new StateCostComparator<Position>());
-						sol = new Solution<Position>(solve.search(s).getSol());
-						setMazeSol(sol, maze);
-						setSolution(sol,args[1]);
-					}
-					else
-						notifyString("Algorithm is not exist");
-				}
-				else if(args.length>=5)
-				{
-					if((args[2]+" "+args[3]+" "+args[4]).equals("Astar Air Distance")==true)
-					{
-						solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeAirDistance(s));
-						sol = new Solution<Position>(solve.search(s).getSol());
-						setMazeSol(sol, maze);
-						setSolution(sol,args[1]);
-					}
-					else if((args[2]+" "+args[3]+" "+args[4]).equals("Astar Manhattan Distance")==true)
-					{
-						solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeManhattanDistance(s));
-						sol = new Solution<Position>(solve.search(s).getSol());
-						setMazeSol(sol, maze);
-						setSolution(sol,args[1]);
-					}
-					else
-						notifyString("Algorithm is not exist");
-				}
-				else
-					notifyString("Algorithm is not exist");
-				return sol;
-			}
-		};
-		Future<Solution<Position>> future = threadpool.submit(call);
-		//check
-		//אני לא הבנתי כל כך למה צריך לעשות את זה כדי להציג את הפתרון
-		//System.out.println(future.isDone());
-		try {
-			future.get();
-			//System.out.println(future.isDone());
-		} catch (InterruptedException e) {
-			notifyString(e.getMessage());
-		} catch (ExecutionException e) {
-			notifyString(e.getMessage());
+			solveMazeOb = new SolveMaze();
+			solveMazeOb.addObserver(this);
+			Future<Solution<Position>> future = threadpool.submit(solveMazeOb.solve(args, maze));
+			
+			try {
+				setMazeSol(future.get(), maze);
+				setSolution(future.get(),args[1]);
+			} catch (InterruptedException | ExecutionException e) {
+				notifyString(e.getMessage());
+			} 
 		}
-		}
-	}
-
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
-
-	@Override
-	public void solveMaze() {
-		Callable<Solution<Position>> call = new Callable<Solution<Position>>() {
-			@Override
-			public Solution<Position> call() {
-				Searchable<Position> s = new Maze3dDomain(maze3dMap.get(properties.getMazeName()));
-				BFS<Position> solve = null;
-				Solution<Position> sol = null;
-				if(properties.getAlgorithmSearchName().equals("BFS")==true)
-				{
-					solve = new BFS<Position>(new StateCostComparator<Position>());
-					sol = new Solution<Position>(solve.search(s).getSol());
-					setMazeSol(sol, maze3dMap.get(properties.getMazeName()));
-					setSolution(sol,properties.getMazeName());
-				}
-				else if(properties.getAlgorithmSearchName().equals("Astar Air Distance")==true)
-				{
-					solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeAirDistance(s));
-					sol = new Solution<Position>(solve.search(s).getSol());
-					setMazeSol(sol, maze3dMap.get(properties.getMazeName()));
-					setSolution(sol,properties.getMazeName());
-				}
-				else if(properties.getAlgorithmSearchName().equals("Astar Manhattan Distance")==true)
-				{
-					solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeManhattanDistance(s));
-					sol = new Solution<Position>(solve.search(s).getSol());
-					setMazeSol(sol, maze3dMap.get(properties.getMazeName()));
-					setSolution(sol, properties.getMazeName());
-				}
-				else
-					notifyString("Algorithm is not exist");
-			return sol;
-			}
-		};
-		Future<Solution<Position>> future = threadpool.submit(call);
 	}
 	
 	public void setSolution(Solution<Position> solution, String name) {
-		//שינית את זה כדי שאם השחקן יתקדם צעדים לא לפי המסלול ונרצה פתרון חדש יהיה ניתן להציג את הפתרון החדש
-		//אם השחקן יזוז כאשר נפעיל את הפתרון לא יהיה בזה צורך כי לשחקן לא תהיה את האופציה להזיז את המקשים עד ההגעה לנקודת הסיום
-		//עשיתי הערה על התנאי כדי שאם נבקש רמז הוא בעצם צריך לחשב מסלול חדש 
-		//אם אתה משנה את הרמז אז אולי תוכל להחזיר את התנאי
-		//if(solutionMap.containsKey(name)==false)
+		if(solutionMap.containsKey(name)==false)
 		{
-			System.out.println("new");
 			solutionMap.put(name, solution);
-			notifyString("solution for " +name+ " is ready");
+			this.setChanged();
+			notifyObservers();
+		}
+		else
+		{
+			if(solutionMap.containsValue(solution)==false)
+			{
+				solutionMap.replace(name, solution);
+				this.setChanged();
+				notifyObservers();
+			}
 		}
 	}
 	
@@ -361,6 +274,13 @@ public class MyModel extends Observable implements Model
 		if(mazeSolMap.containsKey(maze)==false)
 		{
 			mazeSolMap.put(maze, solution);
+		}
+		else
+		{
+			if(mazeSolMap.containsValue(solution)==false)
+			{
+				mazeSolMap.replace(maze, solution);
+			}
 		}
 	}
 	
@@ -422,43 +342,12 @@ public class MyModel extends Observable implements Model
 			}
 		}
 	}
-	
-	public int[][] getCross() {
-		return cross;
-	}
-
-	public void setCross(int[][] cross) {
-		this.cross = cross;
-	}
-
-	public int getIndex() {
-		return index;
-	}
-
-	public void setIndex(int index) {
-		this.index = index;
-	}
 
 	@Override
 	public void notifyString(String str) {
 		index = 0;
 		this.setChanged();
 		notifyObservers(str);
-	}
-
-	@Override
-	public Solution<Position> getSolution(String name) {
-		return solutionMap.get(name);
-	}
-	
-	@Override
-	public boolean checkSolutionHash(String name)
-	{
-		return solutionMap.containsKey(name);
-	}
-
-	public Properties getProperties() {
-		return properties;
 	}
 	
 	public String[] getNamesMaze3d()
@@ -501,6 +390,46 @@ public class MyModel extends Observable implements Model
 		else
 			return -1;
 	}
+	
+	public int[][][] getArrayMaze3d(String name)
+	{
+		return maze3dMap.get(name).getMaze();
+	}
+	public Maze3d getMaze3d(String name)
+	{
+		return maze3dMap.get(name);
+	}
+	public Properties getProperties() {
+		return properties;
+	}
+	@Override
+	public Solution<Position> getSolution(String name) {
+		return solutionMap.get(name);
+	}
+	@Override
+	public boolean checkSolutionHash(String name)
+	{
+		return solutionMap.containsKey(name);
+	}
+	public int[][] getCross() {
+		return cross;
+	}
+	public void setCross(int[][] cross) {
+		this.cross = cross;
+	}
+	public int getIndex() {
+		return index;
+	}
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+	}
+	public boolean checkMazeHash(String name){
+		return maze3dMap.containsKey(name);
+	}
+
 }
 
 

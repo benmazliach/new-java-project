@@ -322,13 +322,6 @@ public class Maze2D extends MazeDisplayer{
 	public void setGoalPosition(Position goalPosition) {
 		this.goalPosition = new Position(goalPosition.getpX(), goalPosition.getpY(), goalPosition.getpZ());
 	}
-
-	@Override
-	public void setCharacterPosition(int row, int col) {
-	/*	characterX=col;
-		characterY=row;
-		moveCharacter(col,row);*/
-	}
 	
 	private void moveCharacter(int w,int h){
 		if(w>=0 && w<mazeData[0].length && h>=0 && h<mazeData.length && mazeData[h][w]==0){

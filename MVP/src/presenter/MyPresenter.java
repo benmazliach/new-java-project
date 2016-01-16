@@ -62,16 +62,19 @@ public class MyPresenter implements Presenter,Observer{
 		}
 		if(o==model)
 		{
-			if(arg.getClass().getName().equals("java.lang.String"))
+			if(arg!=null)
 			{
-				String str = (String) arg;
-				int index = model.getIndex();
-				switch (index) {
-				case 0: view.displayString(str);
-						break;
-				case 1: String[] args = str.split(" ");
-						view.displayCrossSection(model.getCross(), args[0], args[1], args[2]);
-						break;
+				if(arg.getClass().getName().equals("java.lang.String"))
+				{
+					String str = (String) arg;
+					int index = model.getIndex();
+					switch (index) {
+					case 0: view.displayString(str);
+							break;
+					case 1: String[] args = str.split(" ");
+							view.displayCrossSection(model.getCross(), args[0], args[1], args[2]);
+							break;
+					}
 				}
 			}
 		}
@@ -157,10 +160,6 @@ public class MyPresenter implements Presenter,Observer{
 					int z = Integer.parseInt(args[6]);
 				
 					model.generateMaze3d(x, y, z, args[7], args[3]);
-				}
-				else if(args.length==3)
-				{
-					model.generateMaze3d();
 				}
 				else
 					view.displayString("Error");
