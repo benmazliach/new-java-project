@@ -127,7 +127,7 @@ public class MainWindow extends BasicWindow implements View{
 		
 		//MazeDisplayer
 		//mazeDisplayer = new Maze2D(shell, SWT.BORDER);
-		mazeDisplayer = new Maze2D(shell, SWT.BORDER,new Image(display, "resources/goalPos.jpg"),
+		mazeDisplayer = new Maze2D<Position>(shell, SWT.BORDER,new Image(display, "resources/goalPos.jpg"),
 				new Image(display, "resources/piratesIm.jpg"),new Image(display, "resources/coin.jpg"),new Image(display, "resources/Treasure.jpg"));
 		mazeDisplayer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 4));
 		mazeDisplayer.draw(null);
@@ -334,9 +334,9 @@ public class MainWindow extends BasicWindow implements View{
 						if(fileName.getText().equals("")==false)
 						{
 							setCommand(("save maze "+MainWindow.this.mazes[list.getFocusIndex()]+" "+(fileName.getText()+".maz")).split(" "));
-							MessageBox ready = new MessageBox(chooseShell , SWT.ICON_INFORMATION | SWT.YES);
+							/*MessageBox ready = new MessageBox(chooseShell , SWT.ICON_INFORMATION | SWT.YES);
 							ready.setMessage("Maze saved in file "+(fileName.getText()));
-							ready.open();
+							ready.open();*/
 							chooseShell.close();
 						}
 						else
@@ -622,9 +622,9 @@ public class MainWindow extends BasicWindow implements View{
 								String s = "generate 3d maze "+t1.getText()+" "+t2.getText()+" "+t3.getText()+" "+t4.getText()+" "+combo1.getText();
 								String[] args = s.split(" ");
 								setCommand(args);
-								MessageBox ready = new MessageBox(generateShell , SWT.ICON_INFORMATION | SWT.YES);
+								/*MessageBox ready = new MessageBox(generateShell , SWT.ICON_INFORMATION | SWT.YES);
 								ready.setMessage("Maze saved");
-								ready.open();
+								ready.open();*/
 								generateShell.close();
 							}
 							else
