@@ -114,7 +114,7 @@ public class MyPresenter implements Presenter,Observer{
 			@Override
 			public void doCommand(String[] args) {
 				if(args[0].equals("hint"))
-					view.displayString(""+model.getNumOfStopToGoal(args[1]));
+					view.displayString(""+model.getNumOfStepToGoal(args[1]));
 				else
 					view.displayString("error");
 			}

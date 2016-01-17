@@ -36,9 +36,18 @@ import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
 import presenter.Properties;
 
-
+/**
+ * <h1>  MyModel class <h1>
+ * This class is doing all the data calculations behind the scenes
+ * 
+ * @author  Ben Mazliach & Or Moshe
+ * @version 1.0
+ * @since   17/01/16
+ */
 public class MyModel extends Observable implements Model,Observer
 {
+	///////////////////////////////////TODO: check /////////////////////////////////////////////////////
+	
 	private HashMap<String, Maze3d> mazeInFile;
 	private HashMap<String, Maze3d> maze3dMap;
 	private HashMap<String,Solution<Position>> solutionMap;
@@ -50,6 +59,11 @@ public class MyModel extends Observable implements Model,Observer
 	private GenerateMaze generateMazeOb;
 	private SolveMaze solveMazeOb;
 
+	
+	/**
+	 * Constructor - initialize controller
+	 * @param HashMap<String, Command> commands map
+	 */
 	public MyModel(Properties properties) {
 		this.mazeInFile = new HashMap<String, Maze3d>();
 		this.maze3dMap = new HashMap<String, Maze3d>();
@@ -67,7 +81,11 @@ public class MyModel extends Observable implements Model,Observer
 				, maze3dMap.get(properties.getMazeName()));
 	}
 	
-
+	/**
+	 * Comes here after notify event
+	 * @param Observable o
+	 * @param Object arg1
+	 */
 	@Override
 	public void update(Observable o, Object arg1) {
 		if(o==generateMazeOb)
@@ -86,6 +104,14 @@ public class MyModel extends Observable implements Model,Observer
 		}
 	}
 	
+	/**
+	 * Generates a maze and gives it's name
+	 * @param int x
+	 * @param int y
+	 * @param int z
+	 * @param String type of generation
+	 * @param String maze name
+	 */
 	@Override
 	public void generateMaze3d(int x, int y, int z, String generate,String name) {
 		if(maze3dMap.containsKey(name)==true)
@@ -104,6 +130,7 @@ public class MyModel extends Observable implements Model,Observer
 		}
 	}
 	
+	
 	public void setMaze3d(Maze3d maze,String name) {
 		if(maze3dMap.containsKey(name)==false)
 		{
@@ -119,6 +146,13 @@ public class MyModel extends Observable implements Model,Observer
 		}
 	}
 	
+	/**
+	 * Creates two-dimensional array that contains the  requested section
+	 * @param Maze3d maze
+	 * @param String maze name
+	 * @param int number section
+	 * @param char type section(X,Y,Z)
+	 */
 	@Override
 	public void crossBySection(Maze3d maze, String name, int section, char typeSection) {
 		String s = null;
@@ -159,6 +193,13 @@ public class MyModel extends Observable implements Model,Observer
 				notifyString("error");
 		}
 	}
+	
+	/**
+	 * Save maze in file
+	 * @param Maze3d maze name
+	 * @param String maze name
+	 * @param String file Name
+	 */
 	@Override
 	public void saveMaze(Maze3d maze, String name, String fileName) {
 		MyCompressorOutputStream outFile;
@@ -176,6 +217,11 @@ public class MyModel extends Observable implements Model,Observer
 		}
 	}
 
+	/**
+	 * Load maze from file
+	 * @param String maze name
+	 * @param String file Name
+	 */
 	@Override
 	public void loadMaze(String name , String fileName) {
 		MyDecompressorInputStream inFile;
@@ -214,12 +260,20 @@ public class MyModel extends Observable implements Model,Observer
 		}
 	}
 	
+	/**
+	 * Calculates the maze size in the memory
+	 * @param Maze3d maze name
+	 * @param String maze name
+	 */
 	@Override
 	public void mazeSize(Maze3d maze, String name) {
 		notifyString("maze size " + name + " is " +(maze.getXSize()*maze.getYSize()*maze.getZSize()*Integer.SIZE)/8+ " bytes");
 	}
 
-	
+	/**
+	 * Calculate size maze in the file
+	 * @param String[] args
+	 */
 	@Override
 	public void fileSize(String[] args) {
 		if(mazeInFile.containsKey(args[2])==true)
@@ -233,6 +287,11 @@ public class MyModel extends Observable implements Model,Observer
 		}
 	}
 	
+	/**
+	 * Creates solution to the maze
+	 * @param String[] args
+	 * @param Maze3d maze
+	 */
 	@Override
 	public void solveMaze(String[] args, Maze3d maze) {
 		if(mazeSolMap.containsKey(maze)==true)
@@ -252,6 +311,12 @@ public class MyModel extends Observable implements Model,Observer
 		}
 	}
 	
+	
+	/**
+	 * Stores the solution by maze name in the hash map of all the solutions
+	 * @param Solution<Position> solution
+	 * @param String maze name
+	 */
 	public void setSolution(Solution<Position> solution, String name) {
 		if(solutionMap.containsKey(name)==false)
 		{
@@ -270,6 +335,11 @@ public class MyModel extends Observable implements Model,Observer
 		}
 	}
 	
+	/**
+	 * Stores the solution by Maze3d class in the hash map of all the solutions
+	 * @param Solution<Position> solution
+	 * @param String Maze3d maze name
+	 */
 	public void setMazeSol(Solution<Position> solution, Maze3d maze) {
 		if(mazeSolMap.containsKey(maze)==false)
 		{
@@ -284,6 +354,9 @@ public class MyModel extends Observable implements Model,Observer
 		}
 	}
 	
+	/**
+	 * Close all program
+	 */
 	@Override
 	public void exit() {
 		//Zip save
@@ -297,7 +370,10 @@ public class MyModel extends Observable implements Model,Observer
 		}
 		notifyString("Exit");
 	}
-
+	
+	/**
+	 * Compress the maze to .zip file?????????????????????????????????????????????????????????
+	 */
 	@Override
 	public void saveMaze3dMapZip()
 	{
@@ -319,6 +395,9 @@ public class MyModel extends Observable implements Model,Observer
 		}		
 	}
 	
+	/**
+	 * Recompress the maze to .zip file?????????????????????????????????????????????????????????
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void loadMaze3dMapZip()
@@ -343,6 +422,10 @@ public class MyModel extends Observable implements Model,Observer
 		}
 	}
 
+	/**
+	 * Same as notifyObservers(str)
+	 * @param String str
+	 */
 	@Override
 	public void notifyString(String str) {
 		index = 0;
@@ -350,6 +433,11 @@ public class MyModel extends Observable implements Model,Observer
 		notifyObservers(str);
 	}
 	
+	/**
+	 * Get all the existing mazes names
+	 * @return String[]
+	 */
+	@Override
 	public String[] getNamesMaze3d()
 	{
 		HashMap<String, Maze3d> temp = this.maze3dMap;
@@ -376,9 +464,15 @@ public class MyModel extends Observable implements Model,Observer
 		return t;
 	}
 	
+	/**
+	 * Hint for GUI
+	 * @param String name
+	 * @return
+	 */
 	//זו הפונקציה שמביאה את הרמז
 	//תשנה את זה אם אתה רוצה שזה יעשה משהו אחר
-	public /*State<Position>*/ int getNumOfStopToGoal(String name)
+	@Override
+	public /*State<Position>*/ int getNumOfStepToGoal(String name)
 	{
 		//-> יחזיר את הפוזישן הראשון ופשוט נציג אותו
 		if(maze3dMap.containsKey(name)==true)
@@ -391,41 +485,110 @@ public class MyModel extends Observable implements Model,Observer
 			return -1;
 	}
 	
+	/**
+	 * Get the maze data by its name
+	 * @param String name
+	 * @return int[][][]
+	 */
+	@Override
 	public int[][][] getArrayMaze3d(String name)
 	{
 		return maze3dMap.get(name).getMaze();
 	}
+	
+	/**
+	 * Get the maze class by its name
+	 * @param String name
+	 * @return Maze3d
+	 */
+	@Override
 	public Maze3d getMaze3d(String name)
 	{
 		return maze3dMap.get(name);
 	}
+	
+	/**
+	 * Get the properties by class
+	 * @return Properties
+	 */
+	@Override
 	public Properties getProperties() {
 		return properties;
 	}
+	
+	/**
+	 * Get the maze solution by its name (???????????????????????solve??)
+	 * @param String name
+	 * @return Solution<Position>
+	 */
 	@Override
 	public Solution<Position> getSolution(String name) {
 		return solutionMap.get(name);
 	}
+	
+	/**
+	 * Check if the solution for a specific maze is already exist
+	 * @param String name
+	 * @return boolean
+	 */
 	@Override
 	public boolean checkSolutionHash(String name)
 	{
 		return solutionMap.containsKey(name);
+	
 	}
+
+	/**
+	 * Get the current section
+	 * @return int[][]
+	 */
+	@Override
 	public int[][] getCross() {
 		return cross;
 	}
+	
+	/**
+	 * Set the current section
+	 * @param cross
+	 */
+	@Override
 	public void setCross(int[][] cross) {
 		this.cross = cross;
 	}
+	
+	/**
+	 * ??????????????????????????????
+	 * @return int
+	 */	
+	@Override
 	public int getIndex() {
 		return index;
 	}
+	
+	/**
+	 * ??????????????????????????????
+	 * @param int index
+	 */	
+	@Override
 	public void setIndex(int index) {
 		this.index = index;
 	}
+	
+	/**
+	 * Set the properties file
+	 * @param Properties properties
+	 */
+	@Override
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 	}
+	
+	/**
+	 * ???????????????????????????????????????????????/
+	 * @param String name
+	 * @return boolean
+	 */
+	@Override
 	public boolean checkMazeHash(String name){
 		return maze3dMap.containsKey(name);
 	}
