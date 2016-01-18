@@ -10,6 +10,14 @@ import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 import algorithms.search.State;
 
+/**
+ * <h1>  class Maze2D <h1>
+ * This class present section of the 3 dimensional maze
+ * 
+ * @author  Ben Mazliach & Or Moshe
+ * @version 1.0
+ * @since   17/01/16
+ */
 public class Maze2D<T> extends MazeDisplayer<Position>{
 	
 	private Solution<Position> sol;
@@ -17,6 +25,15 @@ public class Maze2D<T> extends MazeDisplayer<Position>{
 	private Image winImage;
 	private String section;
 	
+	/**
+	 * C'tor
+	 * @param Composite parent
+	 * @param int style
+	 * @param Image goalI
+	 * @param Image characterI
+	 * @param Image solution
+	 * @param Image win
+	 */
 	public Maze2D(Composite parent, int style,Image goalI,Image characterI,Image solution,Image win){
 		super(parent, style);
 		
@@ -28,6 +45,11 @@ public class Maze2D<T> extends MazeDisplayer<Position>{
 		this.winImage = win;
 	}
 	
+	/**
+	 * Draw the maze with the character
+	 * @param str
+	 */
+	@Override
 	public void draw(String sectionD)
 	{
 		final Color white=new Color(null, 255, 255, 255);
@@ -44,7 +66,7 @@ public class Maze2D<T> extends MazeDisplayer<Position>{
 					return;
 				}
 				
-				Image m = null;
+				//Image m = null;
 				
 				e.gc.setForeground(new Color(null,0,0,0));
 				e.gc.setBackground(new Color(null,0,0,0));
@@ -147,6 +169,11 @@ public class Maze2D<T> extends MazeDisplayer<Position>{
 		});
 	}
 	
+	/**
+	 * Get all the possible moves in his current position
+	 * @param Strung str
+	 * @return String[]
+	 */
 	@Override
 	public String[] possibleMoves(String section) {
 		String s = "";
@@ -184,6 +211,10 @@ public class Maze2D<T> extends MazeDisplayer<Position>{
 		return s.split(" ");
 	}
 	
+	/**
+	 * Move the character up in the maze
+	 * @param String str
+	 */
 	@Override
 	public void moveUp(String section) {
 		int w = 0;
@@ -209,6 +240,10 @@ public class Maze2D<T> extends MazeDisplayer<Position>{
 		moveCharacter(w, h,section);
 	}
 
+	/**
+	 * Move the character down in the maze
+	 * @param String str
+	 */
 	@Override
 	public void moveDown(String section) {
 		int w = 0;
@@ -234,6 +269,10 @@ public class Maze2D<T> extends MazeDisplayer<Position>{
 		moveCharacter(w, h,section);
 	}
 
+	/**
+	 * Move the character left in the maze
+	 * @param String str
+	 */
 	@Override
 	public void moveLeft(String section) {
 		int w = 0;
@@ -259,6 +298,10 @@ public class Maze2D<T> extends MazeDisplayer<Position>{
 		moveCharacter(w, h,section);
 	}
 
+	/**
+	 * Move the character up right the maze
+	 * @param String str
+	 */
 	@Override
 	public void moveRight(String section) {
 		int w = 0;
@@ -284,7 +327,14 @@ public class Maze2D<T> extends MazeDisplayer<Position>{
 		moveCharacter(w, h,section);
 	}
 	
-	private void moveCharacter(int w,int h,String section){
+	/**
+	 * Move the character 
+	 * @param int w
+	 * @param int h
+	 * @param String section
+	 */
+	private void moveCharacter(int w,int h,String section)
+	{
 		if(w>=0 && w<mazeData[0].length && h>=0 && h<mazeData.length && mazeData[h][w]==0){
 			{
 				if(section.equals("y")==true || section.equals(null))
@@ -313,28 +363,54 @@ public class Maze2D<T> extends MazeDisplayer<Position>{
 		}
 	}
 	
+	/**
+	 * Get the maze goal position
+	 * @return goalPosition
+	 */
 	@Override
 	public Position getGoalPosition() {
 		return this.goalPosition.getCharacter();
 	}
 
+	/**
+	 * Set the maze goal position
+	 * @param goalPosition
+	 */
 	@Override
 	public void setGoalPosition(Position goalPosition) {
 		this.goalPosition.setCharacter(new Position(goalPosition.getpX(), goalPosition.getpY(), goalPosition.getpZ()));
 	}
 	
+	/**
+	 * Get the maze character
+	 * @return Position
+	 */
 	public Position getCharacter() {
 		return character.getCharacter();
 	}
 
+	/**
+	 * Set the maze character
+	 * @param Position character
+	 */
 	public void setCharacter(Position character) {
 		this.character.setCharacter(new Position(character.getpX(), character.getpY(), character.getpZ()));
 	}
 	
+	/**
+	 * Get the solution of the maze
+	 * @return Solution<T>
+	 */
+	@Override
 	public Solution<Position> getSol() {
 		return sol;
 	}
-
+	
+	/**
+	 * Set the solution of the maze
+	 * @return Solution<T>
+	 */
+	@Override
 	public void setSol(Solution<Position> sol) {
 		this.sol = sol;
 	}

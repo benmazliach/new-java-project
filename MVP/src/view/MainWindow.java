@@ -39,6 +39,15 @@ import model.MyModel;
 import presenter.MyPresenter;
 import presenter.Properties;
 
+
+/**
+ * <h1>  class MainWindow <h1>
+ * This class present the main project GUI window
+ * 
+ * @author  Ben Mazliach & Or Moshe
+ * @version 1.0
+ * @since   18/01/16
+ */
 public class MainWindow extends BasicWindow implements View{
 
 	Timer timer;
@@ -52,11 +61,19 @@ public class MainWindow extends BasicWindow implements View{
 	private String solveAlg;
 	private String section;
 	
+	/**
+	 * C'tor
+	 * @param String title
+	 * @param int x
+	 * @param int y
+	 */
 	public MainWindow(String title, int x, int y) {
 		super(title, x, y);
 	}
 	
-
+	/**
+	 * Initialize all the widgets in the window
+	 */
 	@Override
 	void initWidgets() {
 		
@@ -837,32 +854,18 @@ public class MainWindow extends BasicWindow implements View{
 		      }
 		 });
 	}
-
+	
+	/**
+	 * Runnable's start
+	 */
 	@Override
 	public void start() {
 		run();
 	}
 	
-	public static void main(String[] args) {
-		presenter.Properties pr = new presenter.Properties();
-		pr.setAlgorithmGenerateName("MyMaze3dGenerator");
-		pr.setAlgorithmSearchName("BFS");
-		pr.setNumOfThreads(10);
-		pr.setXSize(15);
-		pr.setYSize(1);
-		pr.setZSize(15);
-		pr.setUserInterface("GUI");
-		pr.setMazeName("mainMaze");
-		MyModel m = new MyModel(pr);
-		MainWindow v=new MainWindow("Menu", 1000, 700);
-		MyPresenter p = new MyPresenter(m,v);
-		
-		m.addObserver(p);
-		v.addObserver(p);
-		
-		v.start();
-	}
-	
+	/**
+	 * Move the character to the below section
+	 */
 	public void movePageUp()
 	{
 		if(section.equals("y")==true)
@@ -903,6 +906,9 @@ public class MainWindow extends BasicWindow implements View{
 		}
 	}
 	
+	/**
+	 * Move the character to the upper section
+	 */
 	public void movePageDown()
 	{
 		if(section.equals("y")==true)
@@ -943,6 +949,9 @@ public class MainWindow extends BasicWindow implements View{
 		}
 	}
 	
+	/**
+	 * Open Messagebox
+	 */
 	@Override
 	public void displayString(String s) {
 		if(isInt(s)==true)
@@ -969,6 +978,9 @@ public class MainWindow extends BasicWindow implements View{
 		}
 	}
 	
+	/**
+	 * Print the solution
+	 */
 	@Override
 	public void displaySolution(Solution<Position> sol, String name) {
 		ArrayList<State<Position>> temp = new ArrayList<State<Position>>();
@@ -982,16 +994,25 @@ public class MainWindow extends BasicWindow implements View{
 		mazeDisplayer.redraw();
 	}
 	
+	/**
+	 * Get the maze
+	 * @return Maze3d
+	 */
 	public Maze3d getMaze() {
 		return maze;
 	}
 
-
+	/**
+	 * Set the maze
+	 * @param Maze3d
+	 */
 	public void setMaze(Maze3d maze) {
 		this.maze = maze;
 	}
 
-
+	/**
+	 * Display the maze
+	 */
 	@Override
 	public void displayMaze3d(Maze3d maze, String name) {
 		this.setMaze(maze);
@@ -1003,7 +1024,9 @@ public class MainWindow extends BasicWindow implements View{
 	}
 
 	
-
+	/**
+	 * NotifyObservers
+	 */
 	@Override
 	public void setCommand(String[] args) {
 		this.args = args;
@@ -1011,16 +1034,29 @@ public class MainWindow extends BasicWindow implements View{
 		notifyObservers();
 	}
 
+	/**
+	 * Set the args
+	 */
 	@Override
 	public void setArgs(String[] args) {
 		this.args = args;
 	}
 
+	/**
+	 * Get the args
+	 */
 	@Override
 	public String[] getArgs() {
 		return this.args;
 	}
 
+	/**
+	 * Display the cross section (x/y/z)
+	 * @param arr
+	 * @param sectionType
+	 * @param name
+	 * @param section
+	 */
 	@Override
 	public void displayCrossSection(int[][] arr, String sectionType, String name, String section) {
 		mazeDisplayer.setMazeData(arr);
@@ -1028,16 +1064,28 @@ public class MainWindow extends BasicWindow implements View{
 		mazeDisplayer.redraw();
 	}
 
+	/**
+	 * Get all the mazes by name
+	 * @return String[]
+	 */
 	@Override
 	public String[] getMazes() {
 		return mazes;
 	}
 
+	/**
+	 * Set all the mazes by name
+	 * @param String[]
+	 */
 	@Override
 	public void setMazes(String[] mazes) {
 		this.mazes = mazes;
 	}
 	
+	/**
+	 * Insert the possible moves picuters into the group of the possible moves
+	 * @param Button[] b
+	 */
 	public void possibleMoves(Button[] b)
 	{
 		String[] possibleMoves = null;
@@ -1122,6 +1170,11 @@ public class MainWindow extends BasicWindow implements View{
 		
 	}
 	
+	/**
+	 * True if the string is built from numbers
+	 * @param String str
+	 * @return boolean
+	 */
 	public boolean isInt(String str) {
 		for (int i = 0; i < str.length(); i++) {
 			if(str.charAt(i)<'0' || str.charAt(i)>'9')
@@ -1130,16 +1183,28 @@ public class MainWindow extends BasicWindow implements View{
 		return true;
 	}
 
-
+	/**
+	 * Get the solve algorithm
+	 * @return String
+	 */
+	@Override
 	public String getSolveAlg() {
 		return solveAlg;
 	}
 
-
+	/**
+	 * Get the solve algorithm
+	 * @param String
+	 */
+	@Override
 	public void setSolveAlg(String solveAlg) {
 		this.solveAlg = solveAlg;
 	}
 
+	/**
+	 * Walk in the  solution steps to the goal position
+	 * @param Solution<.Position.> sol
+	 */
 	private void Walk(Solution<Position> sol){
 		if(sol.getSol().size()>0)
 		{

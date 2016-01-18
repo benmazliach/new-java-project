@@ -7,12 +7,25 @@ import java.util.Observer;
 import model.Model;
 import view.View;
 
+/**
+ * <h1>  Presenter c <h1>
+ * This class manages all the program between the model and view
+ * 
+ * @author  Ben Mazliach & Or Moshe
+ * @version 1.0
+ * @since   18/1/16
+ */
 public class MyPresenter implements Presenter,Observer{
 
 	Model model;
 	View view;
 	HashMap<String, Command> commandsMap;
 	
+	/**
+	 * C'tor
+	 * @param model
+	 * @param view
+	 */
 	public MyPresenter(Model model,View view) {
 		this.view = view;
 		this.model = model;
@@ -20,6 +33,11 @@ public class MyPresenter implements Presenter,Observer{
 		putCommandsMap();
 	}
 	
+	/**
+	 * Comes here after notify event
+	 * @param Observable o
+	 * @param Object arg
+	 */
 	@Override
 	public void update(Observable o, Object arg) {
 		if(o==view)
@@ -80,6 +98,9 @@ public class MyPresenter implements Presenter,Observer{
 		}
 	}
 	
+	/**
+	 * Method that defines all the commands and puts them in commands hash map
+	 */
 	public void putCommandsMap()
 	{
 		//get solve algorithm
@@ -270,16 +291,23 @@ public class MyPresenter implements Presenter,Observer{
 		});
 	}
 	
+	/**
+	 * Set the model
+	 * @param Model model
+	 */
 	@Override
 	public void setModel(Model model) {
 		this.model = model;
 	}
 
+	/**
+	 * Set the view
+	 * @param View view
+	 */
 	@Override
 	public void setView(View view) {
 		this.view = view;
 	}
-
 }
 
 

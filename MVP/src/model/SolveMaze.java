@@ -14,6 +14,15 @@ import algorithms.search.Searchable;
 import algorithms.search.Solution;
 import comperators.StateCostComparator;
 
+/**
+ * <h1>  class SolveMaze <h1>
+ * This class is for the future<Sulution<<Position>>,
+ * when the solution is ready its notifies the model
+ * 
+ * @author  Ben Mazliach & Or Moshe
+ * @version 1.0
+ * @since   17/01/16
+ */
 public class SolveMaze extends Observable {
 	
 	public Callable<Solution<Position>>  solve(String[] args, Maze3d maze)
@@ -30,10 +39,10 @@ public class SolveMaze extends Observable {
 					{
 						solve = new BFS<Position>(new StateCostComparator<Position>());
 						sol = new Solution<Position>(solve.search(s).getSol());
-						notifyS("solution for " +args[1]+ " is ready");
+						notifySol("solution for " +args[1]+ " is ready");
 					}
 					else
-						notifyS("Algorithm is not exist");
+						notifySol("Algorithm is not exist");
 				}
 				else if(args.length>=5)
 				{
@@ -41,26 +50,26 @@ public class SolveMaze extends Observable {
 					{
 						solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeAirDistance(s));
 						sol = new Solution<Position>(solve.search(s).getSol());
-						notifyS("solution for " +args[1]+ " is ready");
+						notifySol("solution for " +args[1]+ " is ready");
 					}
 					else if((args[2]+" "+args[3]+" "+args[4]).equals("Astar Manhattan Distance")==true)
 					{
 						solve = new Astar<Position>(new StateCostComparator<Position>(),new MazeManhattanDistance(s));
 						sol = new Solution<Position>(solve.search(s).getSol());
-						notifyS("solution for " +args[1]+ " is ready");
+						notifySol("solution for " +args[1]+ " is ready");
 					}
 					else
-						notifyS("Algorithm is not exist");
+						notifySol("Algorithm is not exist");
 				}
 				else
-					notifyS("Algorithm is not exist");
+					notifySol("Algorithm is not exist");
 				return sol;
 			}
 		};
 		return call;
 	}
 
-	private void notifyS(String str)
+	private void notifySol(String str)
 	{
 		this.setChanged();
 		notifyObservers(str);

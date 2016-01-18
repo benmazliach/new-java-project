@@ -1,5 +1,5 @@
 package boot;
-
+/*
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
@@ -18,9 +18,9 @@ import presenter.MyPresenter;
 import presenter.Properties;
 import view.CLI;
 import view.MyView;
-
+*/
 public class Run {
-		
+	/*	
 	public static void main(String[] args) { 
 		Properties pr = new Properties();
 		pr.setAlgorithmGenerateName("MyMaze3dGenerator");
@@ -142,7 +142,7 @@ public class Run {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}*/
+			}
 		
-	}
+	}*/
 }

@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,20 +17,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-
 import algorithms.mazeGenerators.Maze3d;
-import algorithms.mazeGenerators.Maze3dGenerator;
-import algorithms.mazeGenerators.MyMaze3dGenerator;
 import algorithms.mazeGenerators.Position;
-import algorithms.mazeGenerators.SimpleMaze3dGenerator;
-import algorithms.search.Astar;
-import algorithms.search.BFS;
-import algorithms.search.Maze3dDomain;
-import algorithms.search.MazeAirDistance;
-import algorithms.search.MazeManhattanDistance;
-import algorithms.search.Searchable;
 import algorithms.search.Solution;
-import comperators.StateCostComparator;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
 import presenter.Properties;
@@ -46,7 +34,6 @@ import presenter.Properties;
  */
 public class MyModel extends Observable implements Model,Observer
 {
-	///////////////////////////////////TODO: check /////////////////////////////////////////////////////
 	
 	private HashMap<String, Maze3d> mazeInFile;
 	private HashMap<String, Maze3d> maze3dMap;
@@ -372,7 +359,7 @@ public class MyModel extends Observable implements Model,Observer
 	}
 	
 	/**
-	 * Compress the maze to .zip file?????????????????????????????????????????????????????????
+	 * Save the Maze3d hashmap to .zip file
 	 */
 	@Override
 	public void saveMaze3dMapZip()
@@ -396,7 +383,7 @@ public class MyModel extends Observable implements Model,Observer
 	}
 	
 	/**
-	 * Recompress the maze to .zip file?????????????????????????????????????????????????????????
+	 * Load the Maze3d hashmap from .zip file
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -470,7 +457,6 @@ public class MyModel extends Observable implements Model,Observer
 	 * @return
 	 */
 	//זו הפונקציה שמביאה את הרמז
-	//תשנה את זה אם אתה רוצה שזה יעשה משהו אחר
 	@Override
 	public /*State<Position>*/ int getNumOfStepToGoal(String name)
 	{
@@ -517,7 +503,7 @@ public class MyModel extends Observable implements Model,Observer
 	}
 	
 	/**
-	 * Get the maze solution by its name (???????????????????????solve??)
+	 * Get the maze solution by its name
 	 * @param String name
 	 * @return Solution<Position>
 	 */
@@ -557,7 +543,9 @@ public class MyModel extends Observable implements Model,Observer
 	}
 	
 	/**
-	 * ??????????????????????????????
+	 * Get the index
+	 * index = 1 - display the cross section
+	 * else = 0 - display string
 	 * @return int
 	 */	
 	@Override
@@ -566,7 +554,8 @@ public class MyModel extends Observable implements Model,Observer
 	}
 	
 	/**
-	 * ??????????????????????????????
+ 	 * index = 1 - display the cross section
+	 * else = 0 - display string	 * @param int index
 	 * @param int index
 	 */	
 	@Override
@@ -584,7 +573,7 @@ public class MyModel extends Observable implements Model,Observer
 	}
 	
 	/**
-	 * ???????????????????????????????????????????????/
+	 * Check if the hashmap contains the maze by its name
 	 * @param String name
 	 * @return boolean
 	 */
